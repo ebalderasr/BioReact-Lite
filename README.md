@@ -7,11 +7,18 @@
 ## 🖼️ Application Preview
 
 <p align="center">
-  <img src="./Fig/Fig1.png" width="850" alt="BioReact-Lite Interface">
+  <a href="https://bioreact-lite.streamlit.app/">
+    <img src="./Fig/Fig1.png" width="900" alt="BioReact-Lite Interface">
+  </a>
   <br>
   <br>
   <a href="https://bioreact-lite.streamlit.app/">
-    <img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit">
+    <img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" width="250" alt="Launch Live App">
+  </a>
+  <br>
+  <br>
+  <a href="https://bioreact-lite.streamlit.app/">
+    <strong>🚀 CLICK HERE TO LAUNCH THE LIVE APP</strong>
   </a>
 </p>
 ---
