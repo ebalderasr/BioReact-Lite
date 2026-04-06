@@ -306,121 +306,170 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     border-top-color: var(--g-blue) !important;
 }
 
-/* ── Extra padding for fixed footer ─────────────────────── */
-.block-container { padding-bottom: 4.5rem !important; }
-[data-testid="stSidebar"] .block-container { padding-bottom: 4rem !important; }
-
 /* ══════════════════════════════════════════════════════════
-   HOSTCELL SUITE — componentes CONSTANTES entre herramientas
+   HOSTCELL SUITE — banners CONSTANTES entre herramientas
    ══════════════════════════════════════════════════════════ */
 
-/* ── Suite bar (baner superior, identidad de suite) ─────── */
-.hc-suite-bar {
+/* ── Padding inferior: el contenido no queda bajo el footer  */
+.block-container { padding-bottom: 5rem !important; }
+
+/* ── Sidebar: acotado visualmente por el footer ─────────── */
+[data-testid="stSidebar"] {
+    bottom: 56px !important;
+}
+[data-testid="stSidebar"] .block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.hc-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0 18px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 22px;
+}
+
+.hc-header-brand {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 7px 0 9px 0;
-    border-bottom: 1px solid #E8EAED;
-    margin-bottom: 14px;
+    gap: 14px;
+    min-width: 0;
 }
 
-.hc-suite-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #1A1F36;
-    color: #A8C7FA;
-    padding: 3px 10px 3px 8px;
-    border-radius: 999px;
-    font-size: 0.67rem;
-    font-weight: 700;
+.hc-header-text { min-width: 0; line-height: 1.2; }
+
+.hc-supertitle {
     font-family: 'Google Sans', 'Roboto', sans-serif;
-    letter-spacing: 0.09em;
+    font-size: 0.67rem;
+    font-weight: 800;
     text-transform: uppercase;
-    flex-shrink: 0;
+    letter-spacing: 0.13em;
+    color: var(--g-blue);
+    margin: 0 0 4px 0;
 }
 
-.hc-suite-tagline {
-    font-size: 0.76rem;
+.hc-supertitle .sep { opacity: 0.4; margin: 0 4px; }
+
+.hc-header h1 {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 5px 0;
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+.hc-tagline {
+    font-size: 0.80rem;
     color: var(--text-secondary);
     font-weight: 400;
-    font-style: italic;
+    margin: 0;
 }
 
-/* ── Tool header ─────────────────────────────────────────── */
-.g-header {
+.hc-header-right {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 8px 0 18px 0;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 20px;
+    flex-shrink: 0;
+    padding-top: 6px;
 }
 
-/* ── Footer (baner inferior, CONSTANTE) ──────────────────── */
+/* ── Footer (CONSTANTE — igual estructura en toda la suite) */
 .hc-footer {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 40px;
-    background: #1C1C1E;
-    border-top: 1px solid #2C2C2E;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1.6rem;
+    height: 56px;
+    background: rgba(248, 249, 250, 0.96);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -1px 8px rgba(60,64,67,0.07);
     z-index: 9999;
-    font-family: 'Roboto', 'Google Sans', sans-serif;
-    font-size: 0.76rem;
     box-sizing: border-box;
 }
 
-.hc-footer a {
-    color: #8AB4F8;
-    text-decoration: none;
+.hc-footer-inner {
+    height: 100%;
+    padding: 0 1.6rem;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    font-family: 'Roboto', 'Google Sans', sans-serif;
+}
+
+.hc-footer-suite { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+
+.hc-footer-name {
+    font-size: 0.83rem;
+    font-weight: 700;
+    color: var(--g-blue);
+    white-space: nowrap;
+}
+
+.hc-footer-slogan {
+    font-size: 0.67rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    font-style: italic;
+}
+
+.hc-footer-author {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+.hc-footer-github {
+    display: inline-flex;
+    align-items: center;
     gap: 7px;
-    transition: color 0.15s ease;
-}
-
-.hc-footer a:hover { color: #FFFFFF; }
-
-.hc-footer-center { color: #9AA0A6; }
-
-.hc-footer-suite {
-    color: #9AA0A6;
+    padding: 0.44rem 1.05rem;
+    border-radius: 999px;
+    background: #1e2330;
+    color: #FFFFFF !important;
+    font-size: 0.78rem;
     font-weight: 600;
-    font-size: 0.7rem;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
+    text-decoration: none !important;
+    transition: background 130ms ease, transform 110ms ease, box-shadow 130ms ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.20);
+    flex-shrink: 0;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
 }
+
+.hc-footer-github:hover {
+    background: #2d3348;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 9px rgba(0,0,0,0.25);
+}
+
+.hc-footer-github svg { flex-shrink: 0; }
 </style>
 
-<!-- HostCell Suite Bar -->
-<div class="hc-suite-bar">
-    <span class="hc-suite-pill">
-        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/>
-            <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
-        </svg>
-        HostCell Lab Suite
-    </span>
-    <span class="hc-suite-tagline">Herramientas prácticas y educativas para dinámica y control de bioprocesos</span>
-</div>
-
-<!-- Tool header -->
-<div class="g-header">
-    <div class="g-logo">
-        <div class="g-dot" style="background:#4285F4"></div>
-        <div class="g-dot" style="background:#EA4335"></div>
-        <div class="g-dot" style="background:#FBBC05"></div>
-        <div class="g-dot" style="background:#34A853"></div>
+<!-- ══ HEADER ══ -->
+<div class="hc-header">
+    <div class="hc-header-brand">
+        <div class="g-logo">
+            <div class="g-dot" style="background:#4285F4"></div>
+            <div class="g-dot" style="background:#EA4335"></div>
+            <div class="g-dot" style="background:#FBBC05"></div>
+            <div class="g-dot" style="background:#34A853"></div>
+        </div>
+        <div class="hc-header-text">
+            <p class="hc-supertitle">BioReact Engine <span class="sep">·</span> HostCell</p>
+            <h1>BioReact Engine</h1>
+            <p class="hc-tagline">Simulación de quimiostato con cinética de Monod &nbsp;·&nbsp; Análisis de estabilidad local</p>
+        </div>
     </div>
-    <div class="g-brand">
-        <h1>BioReact Engine <span class="g-chip">Live App</span></h1>
-        <p>Quimiostato con cinética de Monod &nbsp;·&nbsp; Análisis de estabilidad local</p>
+    <div class="hc-header-right">
+        <span class="g-chip">Live App</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -725,12 +774,9 @@ def add_eigenvector_lines(fig, eq, analysis):
 # SIDEBAR — parámetros
 # =========================================================
 st.sidebar.markdown(
-    "<div style='border-bottom:1px solid #E0E0E0;padding:6px 0 14px 0;margin-bottom:4px;'>"
-    "<div style='font-size:0.62rem;font-weight:700;color:#4285F4;text-transform:uppercase;"
-    "letter-spacing:0.1em;font-family:Google Sans,Roboto,sans-serif;margin-bottom:7px;"
-    "opacity:0.8;'>HostCell Lab Suite</div>"
-    "<span style='font-family:Google Sans,Roboto,sans-serif;font-size:1.0rem;"
-    "font-weight:700;color:#202124;'>⚙️ Parámetros de simulación</span></div>",
+    "<div style='border-bottom:1px solid #E8EAED;padding:4px 0 12px 0;margin-bottom:2px;'>"
+    "<span style='font-family:Google Sans,Roboto,sans-serif;font-size:0.95rem;"
+    "font-weight:700;color:#202124;'>⚙️ Parámetros</span></div>",
     unsafe_allow_html=True,
 )
 
@@ -1377,21 +1423,32 @@ with tab_export:
 # =========================================================
 st.markdown("""
 <div class="hc-footer">
-    <a href="https://github.com/ebalderasr/BioReact-Lite" target="_blank" rel="noopener noreferrer">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 16 16"
-             fill="currentColor" aria-label="GitHub">
-            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
-            0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15
-            -.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51
-            -1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
-            0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82
-            2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95
-            .29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016
-            8c0-4.42-3.58-8-8-8z"/>
-        </svg>
-        github.com/ebalderasr/BioReact-Lite
-    </a>
-    <span class="hc-footer-center">© Emiliano Balderas Ramírez</span>
-    <span class="hc-footer-suite">HostCell Lab Suite</span>
+    <div class="hc-footer-inner">
+        <div class="hc-footer-suite">
+            <span class="hc-footer-name">HostCell Lab Suite</span>
+            <span class="hc-footer-slogan">Practical tools for high-performance biotechnology</span>
+        </div>
+        <span class="hc-footer-author">© Emiliano Balderas Ramírez</span>
+        <a href="https://github.com/ebalderasr/BioReact-Lite"
+           target="_blank" rel="noopener noreferrer"
+           class="hc-footer-github">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                 viewBox="0 0 24 24" fill="currentColor" aria-label="GitHub">
+                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839
+                9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605
+                -3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62
+                .069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341
+                1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113
+                -4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098
+                -2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59
+                0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202
+                2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695
+                -4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747
+                0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2
+                12 2Z"/>
+            </svg>
+            Ver en GitHub
+        </a>
+    </div>
 </div>
 """, unsafe_allow_html=True)
