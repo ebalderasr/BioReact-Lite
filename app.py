@@ -41,7 +41,7 @@ st.markdown("""
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
-    --hc-header-height: 76px;
+    --hc-header-height: 84px;
     --hc-footer-height: 56px;
 }
 
@@ -68,11 +68,17 @@ html, body, [data-testid="stAppViewContainer"] {
     border-right: 1px solid var(--border);
     top: var(--hc-header-height) !important;
     bottom: var(--hc-footer-height) !important;
+    height: calc(100vh - var(--hc-header-height) - var(--hc-footer-height)) !important;
+    z-index: 998 !important;
+}
+
+[data-testid="stSidebar"] > div:first-child {
+    height: 100% !important;
 }
 
 [data-testid="stSidebar"] .block-container {
     padding-top: 0.8rem !important;
-    padding-bottom: 0.8rem !important;
+    padding-bottom: 1rem !important;
 }
 
 /* Desactivar el colapso manual de la sidebar para evitar estados rotos */
@@ -158,6 +164,36 @@ html, body, [data-testid="stAppViewContainer"] {
     background: #E6F4EA;
     color: #137333;
     border-color: #A8D5B5;
+}
+
+.hc-suite-pill {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    padding: 0.55rem 0.85rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #F5F9FF 0%, #E8F0FE 100%);
+    border: 1px solid #C5D9FB;
+    box-shadow: var(--shadow-sm);
+    min-width: 0;
+}
+
+.hc-suite-eyebrow {
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--g-blue);
+    line-height: 1;
+}
+
+.hc-suite-copy {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 /* ── Cards ───────────────────────────────────────────────── */
@@ -420,7 +456,7 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.9rem;
+    gap: 1rem;
     padding: 0 1.25rem;
     box-sizing: border-box;
     overflow: hidden;
@@ -445,15 +481,17 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     overflow: hidden;
 }
 
-.hc-supertitle {
-    display: none;
+.hc-title-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    min-width: 0;
 }
-
-.hc-supertitle .sep { opacity: 0.4; margin: 0 4px; }
 
 .hc-header h1 {
     font-family: 'Google Sans', 'Roboto', sans-serif;
-    font-size: 1.06rem;
+    font-size: 1.08rem;
     font-weight: 700;
     color: var(--text-primary);
     margin: 0;
@@ -465,13 +503,20 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 }
 
 .hc-tagline {
-    display: none;
+    font-size: 0.83rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hc-header-right {
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    min-width: 0;
 }
 
 /* ── Footer (CONSTANTE — igual estructura en toda la suite) */
@@ -550,7 +595,7 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 
 @media (max-width: 900px) {
     :root {
-        --hc-header-height: 72px;
+        --hc-header-height: 80px;
     }
 
     .hc-header {
@@ -568,18 +613,24 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
         font-size: 0.98rem;
     }
 
-    .hc-header-right .g-chip {
-        margin-left: 0;
+    .hc-tagline {
+        font-size: 0.76rem;
+    }
+
+    .hc-suite-copy {
+        max-width: 170px;
+        white-space: normal;
     }
 }
 
 @media (max-width: 680px) {
     :root {
-        --hc-header-height: 68px;
+        --hc-header-height: 94px;
         --hc-footer-height: 76px;
     }
 
     .hc-header {
+        align-items: center;
         padding: 0 0.8rem;
     }
 
@@ -589,12 +640,21 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
         padding: 5px;
     }
 
-    .hc-header h1 {
-        font-size: 0.9rem;
+    .hc-title-line {
+        align-items: flex-start;
+        gap: 0.2rem;
+        flex-direction: column;
+        flex-wrap: nowrap;
     }
 
-    .hc-header-right {
-        display: none;
+    .hc-header h1 {
+        font-size: 0.9rem;
+        white-space: normal;
+    }
+
+    .hc-tagline {
+        font-size: 0.72rem;
+        white-space: normal;
     }
 
     .hc-footer-inner {
@@ -610,6 +670,14 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 
     .hc-footer-github {
         margin-left: auto;
+    }
+
+    .hc-suite-pill {
+        padding: 0.45rem 0.65rem;
+    }
+
+    .hc-suite-copy {
+        display: none;
     }
 
     .g-guide-title {
@@ -632,11 +700,17 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
             <div class="g-dot" style="background:#34A853"></div>
         </div>
         <div class="hc-header-text">
-            <h1>BioReact Engine · Simulación de quimiostato y estabilidad local</h1>
+            <div class="hc-title-line">
+                <h1>BioReact Engine</h1>
+                <p class="hc-tagline">Simulación de quimiostato y análisis de estabilidad local</p>
+            </div>
         </div>
     </div>
     <div class="hc-header-right">
-        <span class="g-chip">Live App</span>
+        <div class="hc-suite-pill">
+            <span class="hc-suite-eyebrow">HostCell Suite</span>
+            <span class="hc-suite-copy">Herramientas para biotecnología</span>
+        </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
