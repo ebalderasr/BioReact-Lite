@@ -328,18 +328,6 @@ GOOGLE_LAYOUT = dict(
     font=dict(family="Roboto, Google Sans, Arial, sans-serif", size=12, color="#202124"),
     paper_bgcolor="white",
     plot_bgcolor="white",
-    xaxis=dict(
-        showgrid=True, gridcolor="#F1F3F4", gridwidth=1,
-        linecolor="#E0E0E0", linewidth=1,
-        tickfont=dict(size=11, color="#5F6368"),
-        titlefont=dict(size=12, color="#5F6368", family="Roboto, sans-serif"),
-    ),
-    yaxis=dict(
-        showgrid=True, gridcolor="#F1F3F4", gridwidth=1,
-        linecolor="#E0E0E0", linewidth=1,
-        tickfont=dict(size=11, color="#5F6368"),
-        titlefont=dict(size=12, color="#5F6368", family="Roboto, sans-serif"),
-    ),
     legend=dict(
         bgcolor="rgba(255,255,255,0.92)",
         bordercolor="#E0E0E0",
@@ -356,6 +344,16 @@ GOOGLE_LAYOUT = dict(
         font=dict(family="Roboto, sans-serif", size=12),
     ),
 )
+
+def google_axis(**extra):
+    """Estilo de eje Google Material — pasar kwargs adicionales (title, range, etc.)."""
+    return dict(
+        showgrid=True, gridcolor="#F1F3F4", gridwidth=1,
+        linecolor="#E0E0E0", linewidth=1,
+        tickfont=dict(size=11, color="#5F6368"),
+        title=dict(font=dict(size=12, color="#5F6368", family="Roboto, sans-serif")),
+        **extra,
+    )
 
 # =========================================================
 # UTILIDADES DE UI
@@ -754,15 +752,15 @@ with tab_results:
         fig_t.update_layout(
             **GOOGLE_LAYOUT,
             height=440,
-            xaxis_title="Tiempo (h)",
-            yaxis_title="Concentración (g/L)",
+            xaxis=google_axis(title="Tiempo (h)"),
+            yaxis=google_axis(title="Concentración (g/L)"),
             yaxis2=dict(
                 title="μ (h⁻¹)",
                 overlaying="y",
                 side="right",
                 showgrid=False,
                 tickfont=dict(size=10, color="#FBBC05"),
-                titlefont=dict(size=11, color="#FBBC05"),
+                title_font=dict(size=11, color="#FBBC05"),
             ),
         )
         st.plotly_chart(fig_t, use_container_width=True)
@@ -829,10 +827,8 @@ with tab_results:
         fig_p.update_layout(
             **GOOGLE_LAYOUT,
             height=440,
-            xaxis_title="Biomasa X (g/L)",
-            yaxis_title="Sustrato S (g/L)",
-            xaxis=dict(**GOOGLE_LAYOUT["xaxis"], range=[0, x_max_plot]),
-            yaxis=dict(**GOOGLE_LAYOUT["yaxis"], range=[0, y_max_plot]),
+            xaxis=google_axis(title="Biomasa X (g/L)", range=[0, x_max_plot]),
+            yaxis=google_axis(title="Sustrato S (g/L)", range=[0, y_max_plot]),
         )
         st.plotly_chart(fig_p, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
