@@ -518,6 +518,7 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 .hc-header-right {
     display: flex;
     align-items: center;
+    gap: 0.5rem;
     flex-shrink: 0;
     min-width: 0;
 }
@@ -532,7 +533,7 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     background: rgba(248, 249, 250, 0.96);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
-    border-top: 1px solid var(--border);
+    border-top: 1px solid #E0E0E0;
     box-shadow: 0 -1px 8px rgba(60,64,67,0.07);
     z-index: 9999;
     box-sizing: border-box;
@@ -553,20 +554,20 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 .hc-footer-name {
     font-size: 0.83rem;
     font-weight: 700;
-    color: var(--g-blue);
+    color: #4285F4;
     white-space: nowrap;
 }
 
 .hc-footer-slogan {
     font-size: 0.67rem;
-    color: var(--text-secondary);
+    color: #5F6368;
     white-space: nowrap;
     font-style: italic;
 }
 
 .hc-footer-author {
     font-size: 0.78rem;
-    color: var(--text-secondary);
+    color: #5F6368;
     white-space: nowrap;
     margin-left: auto;
 }
