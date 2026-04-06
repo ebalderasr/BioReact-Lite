@@ -72,6 +72,12 @@ html, body, [data-testid="stAppViewContainer"] {
     padding-bottom: 0.8rem !important;
 }
 
+/* Botón para re-expandir la sidebar cuando está colapsada */
+[data-testid="collapsedControl"] {
+    top: 96px !important;
+    z-index: 1000 !important;
+}
+
 [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3 {
     font-family: 'Google Sans', 'Roboto', sans-serif;
@@ -355,37 +361,48 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     align-items: center;
     gap: 13px;
     min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
 }
 
-.hc-header-text { min-width: 0; line-height: 1.2; }
+.hc-header-text { min-width: 0; line-height: 1.2; flex: 1 1 auto; overflow: hidden; }
 
 .hc-supertitle {
     font-family: 'Google Sans', 'Roboto', sans-serif;
-    font-size: 0.64rem;
+    font-size: 0.62rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.13em;
     color: var(--g-blue);
-    margin: 0 0 3px 0;
+    margin: 0 0 2px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hc-supertitle .sep { opacity: 0.4; margin: 0 4px; }
 
 .hc-header h1 {
     font-family: 'Google Sans', 'Roboto', sans-serif;
-    font-size: 1.45rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin: 0 0 4px 0;
+    margin: 0 0 2px 0;
     letter-spacing: -0.02em;
     line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hc-tagline {
-    font-size: 0.76rem;
+    font-size: 0.72rem;
     color: var(--text-secondary);
     font-weight: 400;
     margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .hc-header-right {
@@ -479,7 +496,7 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
             <div class="g-dot" style="background:#34A853"></div>
         </div>
         <div class="hc-header-text">
-            <p class="hc-supertitle">BioReact Engine <span class="sep">·</span> HostCell</p>
+            <p class="hc-supertitle">HostCell Suite</p>
             <h1>BioReact Engine</h1>
             <p class="hc-tagline">Simulación de quimiostato con cinética de Monod &nbsp;·&nbsp; Análisis de estabilidad local</p>
         </div>
