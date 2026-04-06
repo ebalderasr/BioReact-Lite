@@ -345,15 +345,20 @@ GOOGLE_LAYOUT = dict(
     ),
 )
 
-def google_axis(**extra):
-    """Estilo de eje Google Material — pasar kwargs adicionales (title, range, etc.)."""
-    return dict(
+def google_axis(title=None, **extra):
+    """Estilo de eje Google Material — pasar title (str) y kwargs adicionales (range, etc.)."""
+    axis = dict(
         showgrid=True, gridcolor="#F1F3F4", gridwidth=1,
         linecolor="#E0E0E0", linewidth=1,
         tickfont=dict(size=11, color="#5F6368"),
-        title=dict(font=dict(size=12, color="#5F6368", family="Roboto, sans-serif")),
-        **extra,
     )
+    if title is not None:
+        axis["title"] = dict(
+            text=title,
+            font=dict(size=12, color="#5F6368", family="Roboto, sans-serif"),
+        )
+    axis.update(extra)
+    return axis
 
 # =========================================================
 # UTILIDADES DE UI
