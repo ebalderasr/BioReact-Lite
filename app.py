@@ -909,14 +909,14 @@ resolverse de forma independiente.
         # ── 4. Estados estacionarios ──────────────────────
         st.markdown("### 4. Estados estacionarios")
         st.markdown("""
-Un estado estacionario (X\*, S\*) cumple simultáneamente dX/dt = 0 y dS/dt = 0.
+Un estado estacionario (X*, S*) cumple simultáneamente dX/dt = 0 y dS/dt = 0.
 Existen dos tipos:
 
-**Washout** (lavado celular): X\* = 0, S\* = Sᵣ. Ocurre siempre. El reactor opera
+**Washout** (lavado celular): X* = 0, S* = Sᵣ. Ocurre siempre. El reactor opera
 sin biomasa — la dilución supera la capacidad de crecimiento.
 
 **Equilibrio positivo** (operación productiva): existe cuando μₘₐₓ > D.
-De dX/dt = 0 con X\* ≠ 0 se obtiene μ(S\*) = D, lo que fija el sustrato
+De dX/dt = 0 con X* ≠ 0 se obtiene μ(S*) = D, lo que fija el sustrato
 estacionario independientemente de las condiciones iniciales:
 """)
         st.latex(r"S^* = \frac{D\,K_s}{\mu_{max} - D}")
@@ -953,11 +953,11 @@ linealización de primer orden.
         st.markdown("""
 **El procedimiento en tres pasos:**
 
-**Paso 1 — Variables de desviación.** Definimos x = X − X\*, s = S − S\*,
+**Paso 1 — Variables de desviación.** Definimos x = X − X*, s = S − S*,
 que miden qué tan lejos está el sistema del punto estacionario.
 
 **Paso 2 — Expansión de Taylor de primer orden.**
-Se expande f(X,S) alrededor de (X\*, S\*) y se retienen solo los términos lineales:
+Se expande f(X,S) alrededor de (X*, S*) y se retienen solo los términos lineales:
 """)
         st.latex(
             r"\frac{d}{dt}\begin{bmatrix}x\\s\end{bmatrix}"
@@ -1007,11 +1007,11 @@ donde **μ'(S)** es la derivada de la cinética de Monod respecto al sustrato:
         st.latex(r"\mu'(S) = \frac{d\mu}{dS} = \frac{\mu_{max}\,K_s}{(K_s + S)^2}")
         st.markdown("""
 **Interpretación de cada entrada:**
-- J₁₁ = μ − D: en el equilibrio positivo esto es cero (μ\* = D), por eso la primera
-  columna de J depende enteramente de μ'(S\*).
-- J₁₂ = X\*·μ'(S\*): mide cómo una perturbación en S afecta el crecimiento de biomasa.
-- J₂₁ = −μ\*/Yₓ/ₛ: un incremento en X consume más sustrato → retroalimentación negativa.
-- J₂₂ = −D − X\*·μ'(S\*)/Yₓ/ₛ: siempre negativo; combina el efecto dilutivo y el
+- J₁₁ = μ − D: en el equilibrio positivo esto es cero (μ* = D), por eso la primera
+  columna de J depende enteramente de μ'(S*).
+- J₁₂ = X*·μ'(S*): mide cómo una perturbación en S afecta el crecimiento de biomasa.
+- J₂₁ = −μ*/Yₓ/ₛ: un incremento en X consume más sustrato → retroalimentación negativa.
+- J₂₂ = −D − X*·μ'(S*)/Yₓ/ₛ: siempre negativo; combina el efecto dilutivo y el
   consumo adicional que genera un aumento de S.
 """)
 
