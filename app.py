@@ -49,20 +49,28 @@ html, body, [data-testid="stAppViewContainer"] {
     color: var(--text-primary);
 }
 
-[data-testid="stHeader"] { background: transparent !important; }
+/* Ocultar toolbar nativo de Streamlit — sustituido por hc-header fijo */
+[data-testid="stHeader"] { display: none !important; }
 
+/* Contenido principal: empieza bajo el header fijo (88px) y
+   termina sobre el footer fijo (56px)                        */
 .block-container {
-    padding-top: 1.4rem;
-    padding-bottom: 3rem;
+    padding-top: 104px !important;   /* 88px header + 16px gap  */
+    padding-bottom: 5rem !important;
 }
 
-/* ── Sidebar ─────────────────────────────────────────────── */
+/* ── Sidebar contenido entre header (88px) y footer (56px) ── */
 [data-testid="stSidebar"] {
     background: var(--surface) !important;
     border-right: 1px solid var(--border);
+    top: 88px !important;
+    bottom: 56px !important;
 }
 
-[data-testid="stSidebar"] .block-container { padding-top: 1.4rem; }
+[data-testid="stSidebar"] .block-container {
+    padding-top: 0.8rem !important;
+    padding-bottom: 0.8rem !important;
+}
 
 [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3 {
@@ -322,21 +330,30 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     padding-bottom: 1rem !important;
 }
 
-/* ── Header ──────────────────────────────────────────────── */
+/* ── Header fijo — altura explícita 88px ─────────────────── */
 .hc-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 10px 0 18px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 88px;
+    z-index: 1001;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-    margin-bottom: 22px;
+    box-shadow: 0 1px 8px rgba(60,64,67,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.6rem;
+    box-sizing: border-box;
 }
 
 .hc-header-brand {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 13px;
     min-width: 0;
 }
 
@@ -344,28 +361,28 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 
 .hc-supertitle {
     font-family: 'Google Sans', 'Roboto', sans-serif;
-    font-size: 0.67rem;
+    font-size: 0.64rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.13em;
     color: var(--g-blue);
-    margin: 0 0 4px 0;
+    margin: 0 0 3px 0;
 }
 
 .hc-supertitle .sep { opacity: 0.4; margin: 0 4px; }
 
 .hc-header h1 {
     font-family: 'Google Sans', 'Roboto', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.45rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin: 0 0 5px 0;
+    margin: 0 0 4px 0;
     letter-spacing: -0.02em;
     line-height: 1;
 }
 
 .hc-tagline {
-    font-size: 0.80rem;
+    font-size: 0.76rem;
     color: var(--text-secondary);
     font-weight: 400;
     margin: 0;
@@ -375,7 +392,6 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    padding-top: 6px;
 }
 
 /* ── Footer (CONSTANTE — igual estructura en toda la suite) */
