@@ -305,8 +305,112 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 [data-testid="stSpinner"] > div > div {
     border-top-color: var(--g-blue) !important;
 }
+
+/* ── Extra padding for fixed footer ─────────────────────── */
+.block-container { padding-bottom: 4.5rem !important; }
+[data-testid="stSidebar"] .block-container { padding-bottom: 4rem !important; }
+
+/* ══════════════════════════════════════════════════════════
+   HOSTCELL SUITE — componentes CONSTANTES entre herramientas
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Suite bar (baner superior, identidad de suite) ─────── */
+.hc-suite-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0 9px 0;
+    border-bottom: 1px solid #E8EAED;
+    margin-bottom: 14px;
+}
+
+.hc-suite-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1A1F36;
+    color: #A8C7FA;
+    padding: 3px 10px 3px 8px;
+    border-radius: 999px;
+    font-size: 0.67rem;
+    font-weight: 700;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.hc-suite-tagline {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    font-style: italic;
+}
+
+/* ── Tool header ─────────────────────────────────────────── */
+.g-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 0 18px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
+/* ── Footer (baner inferior, CONSTANTE) ──────────────────── */
+.hc-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: #1C1C1E;
+    border-top: 1px solid #2C2C2E;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.6rem;
+    z-index: 9999;
+    font-family: 'Roboto', 'Google Sans', sans-serif;
+    font-size: 0.76rem;
+    box-sizing: border-box;
+}
+
+.hc-footer a {
+    color: #8AB4F8;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: color 0.15s ease;
+}
+
+.hc-footer a:hover { color: #FFFFFF; }
+
+.hc-footer-center { color: #9AA0A6; }
+
+.hc-footer-suite {
+    color: #9AA0A6;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
 </style>
 
+<!-- HostCell Suite Bar -->
+<div class="hc-suite-bar">
+    <span class="hc-suite-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/>
+            <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+        </svg>
+        HostCell Lab Suite
+    </span>
+    <span class="hc-suite-tagline">Herramientas prácticas y educativas para dinámica y control de bioprocesos</span>
+</div>
+
+<!-- Tool header -->
 <div class="g-header">
     <div class="g-logo">
         <div class="g-dot" style="background:#4285F4"></div>
@@ -316,7 +420,7 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     </div>
     <div class="g-brand">
         <h1>BioReact Engine <span class="g-chip">Live App</span></h1>
-        <p>Host Cell Lab Suite &nbsp;·&nbsp; Emiliano Balderas Ramírez, Bioengineer PhD student</p>
+        <p>Quimiostato con cinética de Monod &nbsp;·&nbsp; Análisis de estabilidad local</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -621,9 +725,12 @@ def add_eigenvector_lines(fig, eq, analysis):
 # SIDEBAR — parámetros
 # =========================================================
 st.sidebar.markdown(
-    "<div style='text-align:center; padding:4px 0 12px 0;'>"
-    "<span style='font-family:Google Sans,Roboto,sans-serif; font-size:1.05rem;"
-    " font-weight:700; color:#202124;'>⚙️ Parámetros</span></div>",
+    "<div style='border-bottom:1px solid #E0E0E0;padding:6px 0 14px 0;margin-bottom:4px;'>"
+    "<div style='font-size:0.62rem;font-weight:700;color:#4285F4;text-transform:uppercase;"
+    "letter-spacing:0.1em;font-family:Google Sans,Roboto,sans-serif;margin-bottom:7px;"
+    "opacity:0.8;'>HostCell Lab Suite</div>"
+    "<span style='font-family:Google Sans,Roboto,sans-serif;font-size:1.0rem;"
+    "font-weight:700;color:#202124;'>⚙️ Parámetros de simulación</span></div>",
     unsafe_allow_html=True,
 )
 
@@ -1264,3 +1371,27 @@ with tab_export:
             use_container_width=True,
         )
         st.markdown('</div>', unsafe_allow_html=True)
+
+# =========================================================
+# FOOTER — HOSTCELL LAB SUITE (constante entre herramientas)
+# =========================================================
+st.markdown("""
+<div class="hc-footer">
+    <a href="https://github.com/ebalderasr/BioReact-Lite" target="_blank" rel="noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 16 16"
+             fill="currentColor" aria-label="GitHub">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+            0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15
+            -.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51
+            -1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
+            0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82
+            2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95
+            .29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016
+            8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        github.com/ebalderasr/BioReact-Lite
+    </a>
+    <span class="hc-footer-center">© Emiliano Balderas Ramírez</span>
+    <span class="hc-footer-suite">HostCell Lab Suite</span>
+</div>
+""", unsafe_allow_html=True)
