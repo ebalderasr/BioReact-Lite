@@ -12,6 +12,7 @@ st.set_page_config(
     page_title="BioReact Engine · Google Lab",
     page_icon="🧬",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 # =========================================================
@@ -40,7 +41,7 @@ st.markdown("""
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
-    --hc-header-height: 88px;
+    --hc-header-height: 76px;
     --hc-footer-height: 56px;
 }
 
@@ -74,27 +75,10 @@ html, body, [data-testid="stAppViewContainer"] {
     padding-bottom: 0.8rem !important;
 }
 
-/* Botón para re-expandir la sidebar cuando está colapsada */
-[data-testid="collapsedControl"] {
-    position: fixed !important;
-    top: calc(var(--hc-header-height) + 10px) !important;
-    left: 12px !important;
-    z-index: 1003 !important;
-}
-
-[data-testid="collapsedControl"] button {
-    width: 2.5rem !important;
-    height: 2.5rem !important;
-    border-radius: 999px !important;
-    border: 1px solid var(--border) !important;
-    background: var(--surface) !important;
-    color: var(--g-blue) !important;
-    box-shadow: var(--shadow-md) !important;
-}
-
-[data-testid="collapsedControl"] button:hover {
-    border-color: var(--g-blue) !important;
-    background: #E8F0FE !important;
+/* Desactivar el colapso manual de la sidebar para evitar estados rotos */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapseButton"] {
+    display: none !important;
 }
 
 [data-testid="stSidebar"] h2,
@@ -436,58 +420,52 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1.6rem;
+    gap: 0.9rem;
+    padding: 0 1.25rem;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .hc-header-brand {
     display: flex;
     align-items: center;
-    gap: 13px;
+    gap: 12px;
     min-width: 0;
     flex: 1 1 auto;
     max-width: 100%;
     overflow: hidden;
 }
 
-.hc-header-text { min-width: 0; line-height: 1.2; flex: 1 1 auto; overflow: hidden; }
+.hc-header-text {
+    min-width: 0;
+    min-height: 100%;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
 
 .hc-supertitle {
-    font-family: 'Google Sans', 'Roboto', sans-serif;
-    font-size: 0.62rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.13em;
-    color: var(--g-blue);
-    margin: 0 0 2px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: none;
 }
 
 .hc-supertitle .sep { opacity: 0.4; margin: 0 4px; }
 
 .hc-header h1 {
     font-family: 'Google Sans', 'Roboto', sans-serif;
-    font-size: 1.15rem;
+    font-size: 1.06rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin: 0 0 2px 0;
+    margin: 0;
     letter-spacing: -0.02em;
-    line-height: 1;
+    line-height: 1.15;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .hc-tagline {
-    font-size: 0.72rem;
-    color: var(--text-secondary);
-    font-weight: 400;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: none;
 }
 
 .hc-header-right {
@@ -572,27 +550,22 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 
 @media (max-width: 900px) {
     :root {
-        --hc-header-height: 96px;
+        --hc-header-height: 72px;
     }
 
     .hc-header {
         padding: 0 1rem;
-        gap: 10px;
     }
 
     .g-logo {
-        width: 42px;
-        height: 42px;
-        padding: 7px;
+        width: 40px;
+        height: 40px;
+        padding: 6px;
         gap: 4px;
     }
 
     .hc-header h1 {
-        font-size: 1.02rem;
-    }
-
-    .hc-tagline {
-        font-size: 0.68rem;
+        font-size: 0.98rem;
     }
 
     .hc-header-right .g-chip {
@@ -602,41 +575,26 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 
 @media (max-width: 680px) {
     :root {
-        --hc-header-height: 112px;
+        --hc-header-height: 68px;
         --hc-footer-height: 76px;
     }
 
     .hc-header {
-        align-items: flex-start;
-        padding: 0.8rem 0.9rem;
+        padding: 0 0.8rem;
     }
 
-    .hc-header-brand {
-        align-items: flex-start;
-    }
-
-    .hc-header-text {
-        overflow: visible;
-    }
-
-    .hc-supertitle,
-    .hc-header h1 {
-        white-space: normal;
-        overflow: visible;
-        text-overflow: clip;
+    .g-logo {
+        width: 36px;
+        height: 36px;
+        padding: 5px;
     }
 
     .hc-header h1 {
-        font-size: 0.98rem;
-        line-height: 1.15;
-    }
-
-    .hc-tagline {
-        display: none;
+        font-size: 0.9rem;
     }
 
     .hc-header-right {
-        padding-top: 2px;
+        display: none;
     }
 
     .hc-footer-inner {
@@ -674,9 +632,7 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
             <div class="g-dot" style="background:#34A853"></div>
         </div>
         <div class="hc-header-text">
-            <p class="hc-supertitle">HostCell Suite</p>
-            <h1>BioReact Engine</h1>
-            <p class="hc-tagline">Simulación de quimiostato con cinética de Monod &nbsp;·&nbsp; Análisis de estabilidad local</p>
+            <h1>BioReact Engine · Simulación de quimiostato y estabilidad local</h1>
         </div>
     </div>
     <div class="hc-header-right">
