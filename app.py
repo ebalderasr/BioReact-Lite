@@ -168,32 +168,35 @@ html, body, [data-testid="stAppViewContainer"] {
 
 .hc-suite-pill {
     display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    gap: 2px;
     padding: 0.55rem 0.85rem;
     border-radius: 14px;
     background: linear-gradient(135deg, #F5F9FF 0%, #E8F0FE 100%);
     border: 1px solid #C5D9FB;
     box-shadow: var(--shadow-sm);
     min-width: 0;
+    text-decoration: none !important;
+    transition: transform 110ms ease, box-shadow 130ms ease, background 130ms ease;
 }
 
-.hc-suite-eyebrow {
-    font-size: 0.66rem;
+.hc-suite-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    background: linear-gradient(135deg, #EEF5FF 0%, #DCEBFF 100%);
+}
+
+.hc-suite-pill:visited {
+    color: inherit;
+}
+
+.hc-suite-label {
+    font-size: 0.76rem;
     font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: var(--g-blue);
-    line-height: 1;
-}
-
-.hc-suite-copy {
-    font-size: 0.74rem;
-    color: var(--text-secondary);
-    line-height: 1.2;
     white-space: nowrap;
+    text-transform: uppercase;
 }
 
 /* ── Cards ───────────────────────────────────────────────── */
@@ -617,8 +620,8 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
         font-size: 0.76rem;
     }
 
-    .hc-suite-copy {
-        max-width: 170px;
+    .hc-suite-label {
+        font-size: 0.72rem;
         white-space: normal;
     }
 }
@@ -676,8 +679,8 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
         padding: 0.45rem 0.65rem;
     }
 
-    .hc-suite-copy {
-        display: none;
+    .hc-suite-label {
+        font-size: 0.68rem;
     }
 
     .g-guide-title {
@@ -707,10 +710,9 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
         </div>
     </div>
     <div class="hc-header-right">
-        <div class="hc-suite-pill">
-            <span class="hc-suite-eyebrow">HostCell Suite</span>
-            <span class="hc-suite-copy">Herramientas para biotecnología</span>
-        </div>
+        <a class="hc-suite-pill" href="https://www.hostcell.app">
+            <span class="hc-suite-label">HostCell Lab Suite</span>
+        </a>
     </div>
 </div>
 """, unsafe_allow_html=True)
