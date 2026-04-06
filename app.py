@@ -40,6 +40,8 @@ st.markdown("""
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
+    --hc-header-height: 88px;
+    --hc-footer-height: 56px;
 }
 
 /* ── Global typography & background ─────────────────────── */
@@ -55,16 +57,16 @@ html, body, [data-testid="stAppViewContainer"] {
 /* Contenido principal: empieza bajo el header fijo (88px) y
    termina sobre el footer fijo (56px)                        */
 .block-container {
-    padding-top: 104px !important;   /* 88px header + 16px gap  */
-    padding-bottom: 5rem !important;
+    padding-top: calc(var(--hc-header-height) + 16px) !important;
+    padding-bottom: calc(var(--hc-footer-height) + 1.5rem) !important;
 }
 
 /* ── Sidebar contenido entre header (88px) y footer (56px) ── */
 [data-testid="stSidebar"] {
     background: var(--surface) !important;
     border-right: 1px solid var(--border);
-    top: 88px !important;
-    bottom: 56px !important;
+    top: var(--hc-header-height) !important;
+    bottom: var(--hc-footer-height) !important;
 }
 
 [data-testid="stSidebar"] .block-container {
@@ -74,8 +76,25 @@ html, body, [data-testid="stAppViewContainer"] {
 
 /* Botón para re-expandir la sidebar cuando está colapsada */
 [data-testid="collapsedControl"] {
-    top: 96px !important;
-    z-index: 1000 !important;
+    position: fixed !important;
+    top: calc(var(--hc-header-height) + 10px) !important;
+    left: 12px !important;
+    z-index: 1003 !important;
+}
+
+[data-testid="collapsedControl"] button {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 999px !important;
+    border: 1px solid var(--border) !important;
+    background: var(--surface) !important;
+    color: var(--g-blue) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+[data-testid="collapsedControl"] button:hover {
+    border-color: var(--g-blue) !important;
+    background: #E8F0FE !important;
 }
 
 [data-testid="stSidebar"] h2,
@@ -325,11 +344,11 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
    ══════════════════════════════════════════════════════════ */
 
 /* ── Padding inferior: el contenido no queda bajo el footer  */
-.block-container { padding-bottom: 5rem !important; }
+.block-container { padding-bottom: calc(var(--hc-footer-height) + 1.5rem) !important; }
 
 /* ── Sidebar: acotado visualmente por el footer ─────────── */
 [data-testid="stSidebar"] {
-    bottom: 56px !important;
+    bottom: var(--hc-footer-height) !important;
 }
 [data-testid="stSidebar"] .block-container {
     padding-top: 1rem !important;
@@ -342,7 +361,7 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     top: 0;
     left: 0;
     right: 0;
-    height: 88px;
+    height: var(--hc-header-height);
     z-index: 1001;
     background: rgba(255, 255, 255, 0.97);
     backdrop-filter: blur(20px);
@@ -362,6 +381,7 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     gap: 13px;
     min-width: 0;
     flex: 1 1 auto;
+    max-width: 100%;
     overflow: hidden;
 }
 
@@ -417,7 +437,7 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
     bottom: 0;
     left: 0;
     right: 0;
-    height: 56px;
+    height: var(--hc-footer-height);
     background: rgba(248, 249, 250, 0.96);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
@@ -484,6 +504,91 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 }
 
 .hc-footer-github svg { flex-shrink: 0; }
+
+@media (max-width: 900px) {
+    :root {
+        --hc-header-height: 96px;
+    }
+
+    .hc-header {
+        padding: 0 1rem;
+        gap: 10px;
+    }
+
+    .g-logo {
+        width: 42px;
+        height: 42px;
+        padding: 7px;
+        gap: 4px;
+    }
+
+    .hc-header h1 {
+        font-size: 1.02rem;
+    }
+
+    .hc-tagline {
+        font-size: 0.68rem;
+    }
+
+    .hc-header-right .g-chip {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 680px) {
+    :root {
+        --hc-header-height: 112px;
+        --hc-footer-height: 76px;
+    }
+
+    .hc-header {
+        align-items: flex-start;
+        padding: 0.8rem 0.9rem;
+    }
+
+    .hc-header-brand {
+        align-items: flex-start;
+    }
+
+    .hc-header-text {
+        overflow: visible;
+    }
+
+    .hc-supertitle,
+    .hc-header h1 {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+    }
+
+    .hc-header h1 {
+        font-size: 0.98rem;
+        line-height: 1.15;
+    }
+
+    .hc-tagline {
+        display: none;
+    }
+
+    .hc-header-right {
+        padding-top: 2px;
+    }
+
+    .hc-footer-inner {
+        padding: 0.45rem 0.9rem;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 0.35rem 1rem;
+    }
+
+    .hc-footer-author {
+        margin-left: 0;
+    }
+
+    .hc-footer-github {
+        margin-left: auto;
+    }
+}
 </style>
 
 <!-- ══ HEADER ══ -->
