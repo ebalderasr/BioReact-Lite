@@ -1283,6 +1283,18 @@ analíticamente en general, y necesitamos integración numérica y linealizació
 
         # ── 2. Balance de biomasa ─────────────────────────
         st.markdown("### 2. Balance de biomasa")
+        st.markdown("""
+Partimos del balance extensivo de células en un quimiostato perfectamente mezclado:
+""")
+        st.latex(r"\mu X V - X F = \frac{d(XV)}{dt}")
+        st.markdown("""
+Si el reactor opera a **volumen constante** (**V** constante), entonces:
+""")
+        st.latex(r"V\frac{dX}{dt} = \mu X V - X F")
+        st.markdown("""
+Dividiendo entre **V** y usando la definición de tasa de dilución
+**D = F/V**, se obtiene la forma que usa la simulación:
+""")
         st.latex(r"\frac{dX}{dt} = \underbrace{\mu X}_{\text{crecimiento}} - \underbrace{D\,X}_{\text{arrastre hidráulico}}")
         st.markdown("""
 Este balance surge de aplicar **Acumulación = Entrada − Salida + Generación** a la biomasa
@@ -1300,6 +1312,18 @@ el **lavado celular** (washout).
 
         # ── 3. Balance de sustrato ────────────────────────
         st.markdown("### 3. Balance de sustrato")
+        st.markdown("""
+De forma análoga, el balance extensivo del sustrato limitante es:
+""")
+        st.latex(r"S_r F - \frac{\mu X V}{Y_{x/s}} - S F = \frac{d(VS)}{dt}")
+        st.markdown("""
+Con **V** constante:
+""")
+        st.latex(r"V\frac{dS}{dt} = S_r F - \frac{\mu X V}{Y_{x/s}} - S F")
+        st.markdown("""
+Y dividiendo entre **V**, usando otra vez **D = F/V**, llegamos a la ecuación en concentración
+que implementa la app:
+""")
         st.latex(r"\frac{dS}{dt} = \underbrace{D(S_r - S)}_{\text{aporte neto}} - \underbrace{\frac{\mu X}{Y_{x/s}}}_{\text{consumo celular}}")
         st.markdown("""
 | Término | Signo | Significado físico |
@@ -1452,8 +1476,11 @@ se muestran como líneas de trazos.
         st.markdown("""
 Como las EDOs del quimiostato no tienen solución analítica exacta, usamos
 **Runge-Kutta de 4to orden (RK4)**, que estima la trayectoria evaluando
-cuatro pendientes en cada paso Δt:
-""")
+cuatro pendientes en cada paso Δt sobre el sistema:
+        """)
+        st.latex(
+            r"\frac{dX}{dt} = f_1(X,S) = X(\mu - D), \qquad \frac{dS}{dt} = f_2(X,S) = D(S_r-S) - \frac{\mu X}{Y_{x/s}}"
+        )
         st.latex(
             r"\mathbf{k}_1 = \Delta t\,\mathbf{f}(t_n,\,\mathbf{y}_n)"
         )
