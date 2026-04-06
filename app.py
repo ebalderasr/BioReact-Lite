@@ -838,6 +838,252 @@ with tab_results:
         st.plotly_chart(fig_p, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # ── Guía docente ─────────────────────────────────────
+    st.divider()
+    with st.expander("📖  Marco teórico y guía de modelado", expanded=False):
+
+        # ── Intro ──────────────────────────────────────────
+        st.markdown("""
+<div style="background:#E8F0FE;border-left:4px solid #4285F4;border-radius:8px;
+            padding:0.85rem 1rem;margin-bottom:1.2rem;font-size:0.92rem;color:#202124;">
+<b>¿Qué simula esta herramienta?</b><br>
+Un <b>quimiostato</b>: reactor de cultivo continuo donde la tasa de dilución <i>D</i> mantiene
+el volumen constante. Las variables de estado son la concentración de biomasa <i>X</i>
+y la concentración de sustrato limitante <i>S</i>. El sistema es <b>no lineal</b> porque la
+tasa de crecimiento celular depende de <i>S</i> de forma saturante. La app resuelve
+numéricamente las EDOs (Runge-Kutta 4) y analiza la estabilidad local mediante
+linealización — exactamente el flujo descrito en <em>Dinámica y Control de Biorreactores</em>
+(Ramírez Reivich & Balderas Ramírez, Cap. 2–3).
+</div>
+""", unsafe_allow_html=True)
+
+        # ── 1. Monod ──────────────────────────────────────
+        st.markdown("### 1. Cinética de Monod")
+        st.latex(r"\mu(S) = \frac{\mu_{max}\,S}{K_s + S}")
+        st.markdown("""
+La velocidad específica de crecimiento **μ** no es constante: depende de cuánto sustrato
+hay disponible. La expresión de Monod captura dos límites físicos importantes:
+
+- **Sustrato escaso** (S ≪ Kₛ): μ ≈ (μₘₐₓ/Kₛ)·S — crecimiento casi lineal con S.
+- **Sustrato abundante** (S ≫ Kₛ): μ → μₘₐₓ — el cultivo alcanza su velocidad máxima
+  y ya no puede crecer más rápido aunque se agregue más sustrato.
+
+**Kₛ** es la constante de saturación: la concentración de sustrato a la que μ = μₘₐₓ/2.
+Un Kₛ bajo significa que el microorganismo es muy eficiente a bajas concentraciones.
+Esta no linealidad de μ(S) es la razón por la que el sistema no puede resolverse
+analíticamente en general, y necesitamos integración numérica y linealización local.
+""")
+
+        # ── 2. Balance de biomasa ─────────────────────────
+        st.markdown("### 2. Balance de biomasa")
+        st.latex(r"\frac{dX}{dt} = \underbrace{\mu X}_{\text{crecimiento}} - \underbrace{D\,X}_{\text{arrastre hidráulico}}")
+        st.markdown("""
+Este balance surge de aplicar **Acumulación = Entrada − Salida + Generación** a la biomasa
+en el reactor (con alimentación estéril, sin biomasa en la entrada):
+
+| Término | Signo | Significado físico |
+|---------|-------|-------------------|
+| μX | + | Crecimiento celular: cada célula se multiplica a velocidad μ |
+| DX | − | Arrastre: la corriente de salida se lleva biomasa a razón D·X |
+
+El reactor opera en estado estacionario cuando ambos se igualan: **μ = D**.
+Si μ > D la biomasa crece; si μ < D el cultivo se diluye y eventualmente ocurre
+el **lavado celular** (washout).
+""")
+
+        # ── 3. Balance de sustrato ────────────────────────
+        st.markdown("### 3. Balance de sustrato")
+        st.latex(r"\frac{dS}{dt} = \underbrace{D(S_r - S)}_{\text{aporte neto}} - \underbrace{\frac{\mu X}{Y_{x/s}}}_{\text{consumo celular}}")
+        st.markdown("""
+| Término | Signo | Significado físico |
+|---------|-------|-------------------|
+| D·Sᵣ | + | La alimentación aporta sustrato a concentración Sᵣ |
+| −D·S | − | La corriente de salida se lleva sustrato a concentración S |
+| −μX/Yₓ/ₛ | − | Las células consumen sustrato para crecer; Yₓ/ₛ es el rendimiento (g biomasa por g sustrato) |
+
+El acoplamiento entre los dos balances — X aparece en el balance de S y S aparece en el
+de X a través de μ(S) — es la fuente de la **no linealidad** del sistema. No pueden
+resolverse de forma independiente.
+""")
+
+        # ── 4. Estados estacionarios ──────────────────────
+        st.markdown("### 4. Estados estacionarios")
+        st.markdown("""
+Un estado estacionario (X\*, S\*) cumple simultáneamente dX/dt = 0 y dS/dt = 0.
+Existen dos tipos:
+
+**Washout** (lavado celular): X\* = 0, S\* = Sᵣ. Ocurre siempre. El reactor opera
+sin biomasa — la dilución supera la capacidad de crecimiento.
+
+**Equilibrio positivo** (operación productiva): existe cuando μₘₐₓ > D.
+De dX/dt = 0 con X\* ≠ 0 se obtiene μ(S\*) = D, lo que fija el sustrato
+estacionario independientemente de las condiciones iniciales:
+""")
+        st.latex(r"S^* = \frac{D\,K_s}{\mu_{max} - D}")
+        st.markdown("Y la biomasa estacionaria se obtiene del balance de sustrato:")
+        st.latex(r"X^* = Y_{x/s}\,(S_r - S^*)")
+
+        if positive_eq is not None and positive_eq["physical"]:
+            S_star = positive_eq["S"]
+            X_star = positive_eq["X"]
+            st.markdown("**Con los parámetros actuales:**")
+            st.latex(
+                rf"S^* = \frac{{({params['D']:.4f})({params['Ks']:.4f})}}"
+                rf"{{{params['mu_max']:.4f} - {params['D']:.4f}}} = {S_star:.6f}\;\text{{g/L}}"
+            )
+            st.latex(
+                rf"X^* = {params['Yxs']:.4f}\,({params['Sr']:.4f} - {S_star:.6f}) = {X_star:.6f}\;\text{{g/L}}"
+            )
+        else:
+            st.info("Con los parámetros actuales (μₘₐₓ ≤ D) no existe equilibrio positivo: el sistema está en régimen de washout.")
+
+        # ── 5. Por qué la Jacobiana: Lyapunov ────────────
+        st.markdown("### 5. ¿Por qué calculamos la matriz Jacobiana?")
+        st.markdown("""
+<div style="background:#FEF7E0;border-left:4px solid #FBBC05;border-radius:8px;
+            padding:0.85rem 1rem;margin-bottom:1rem;font-size:0.92rem;color:#202124;">
+<b>Método indirecto de Lyapunov (linealización local)</b><br>
+El sistema de biorreactor es <b>no lineal</b>: no existe solución analítica general.
+Sin embargo, <em>cerca de un punto estacionario</em> podemos aproximar el comportamiento
+del sistema por uno <b>lineal</b>, y ese sistema lineal sí puede analizarse exactamente.
+Esta estrategia es el <b>método indirecto de Lyapunov</b>, también llamado
+linealización de primer orden.
+</div>
+""", unsafe_allow_html=True)
+        st.markdown("""
+**El procedimiento en tres pasos:**
+
+**Paso 1 — Variables de desviación.** Definimos x = X − X\*, s = S − S\*,
+que miden qué tan lejos está el sistema del punto estacionario.
+
+**Paso 2 — Expansión de Taylor de primer orden.**
+Se expande f(X,S) alrededor de (X\*, S\*) y se retienen solo los términos lineales:
+""")
+        st.latex(
+            r"\frac{d}{dt}\begin{bmatrix}x\\s\end{bmatrix}"
+            r"\approx J(X^*,S^*)\begin{bmatrix}x\\s\end{bmatrix}"
+        )
+        st.markdown("""
+donde **J** es la matriz de derivadas parciales evaluada en el punto estacionario,
+que es precisamente la **Matriz Jacobiana**:
+""")
+        st.latex(
+            r"J = \begin{bmatrix}"
+            r"\dfrac{\partial f_1}{\partial X} & \dfrac{\partial f_1}{\partial S}\\[1em]"
+            r"\dfrac{\partial f_2}{\partial X} & \dfrac{\partial f_2}{\partial S}"
+            r"\end{bmatrix}_{(X^*,\,S^*)}"
+        )
+        st.markdown("""
+**Paso 3 — Teorema de Lyapunov (criterio espectral).**
+La estabilidad local del punto estacionario original (no lineal) queda determinada
+por los **eigenvalores** λ₁, λ₂ de J:
+
+- Si **Re(λᵢ) < 0 para todos los i** → el equilibrio es **localmente asintóticamente estable**.
+  Cualquier perturbación pequeña decae exponencialmente.
+- Si **algún Re(λᵢ) > 0** → el equilibrio es **inestable**.
+  Las perturbaciones se amplifican.
+- Si algún Re(λᵢ) = 0 → la linealización no es concluyente.
+
+> El teorema garantiza que la conclusión sobre estabilidad local del sistema linealizado
+> se transfiere al sistema no lineal original — siempre que los eigenvalores sean
+> no nulos en su parte real.
+""")
+
+        # ── 6. Jacobiana analítica ────────────────────────
+        st.markdown("### 6. Jacobiana analítica del quimiostato")
+        st.markdown("""
+Para f₁ = X(μ − D) y f₂ = D(Sᵣ − S) − μX/Yₓ/ₛ,
+las derivadas parciales son:
+""")
+        st.latex(
+            r"J = \begin{pmatrix}"
+            r"\mu - D & X\,\mu'(S)\\"
+            r"-\dfrac{\mu}{Y_{x/s}} & -D - \dfrac{X\,\mu'(S)}{Y_{x/s}}"
+            r"\end{pmatrix}"
+        )
+        st.markdown("""
+donde **μ'(S)** es la derivada de la cinética de Monod respecto al sustrato:
+""")
+        st.latex(r"\mu'(S) = \frac{d\mu}{dS} = \frac{\mu_{max}\,K_s}{(K_s + S)^2}")
+        st.markdown("""
+**Interpretación de cada entrada:**
+- J₁₁ = μ − D: en el equilibrio positivo esto es cero (μ\* = D), por eso la primera
+  columna de J depende enteramente de μ'(S\*).
+- J₁₂ = X\*·μ'(S\*): mide cómo una perturbación en S afecta el crecimiento de biomasa.
+- J₂₁ = −μ\*/Yₓ/ₛ: un incremento en X consume más sustrato → retroalimentación negativa.
+- J₂₂ = −D − X\*·μ'(S\*)/Yₓ/ₛ: siempre negativo; combina el efecto dilutivo y el
+  consumo adicional que genera un aumento de S.
+""")
+
+        if positive_eq is not None and positive_eq["physical"]:
+            J = positive_analysis["J"]
+            st.markdown("**Jacobiana numérica con los parámetros actuales:**")
+            st.latex(
+                r"J^* = \begin{pmatrix}"
+                + f"{J[0,0]:.6f} & {J[0,1]:.6f}\\\\"
+                + f"{J[1,0]:.6f} & {J[1,1]:.6f}"
+                + r"\end{pmatrix}"
+            )
+
+        # ── 7. Modos dinámicos ────────────────────────────
+        st.markdown("### 7. Eigenvalores y modos dinámicos")
+        st.markdown("""
+Cada eigenvalor λᵢ define una **escala de tiempo** del transitorio.
+El modo asociado a λᵢ decae como e^(λᵢ·t):
+
+- **|λᵢ| grande** → modo rápido: la perturbación desaparece casi de inmediato.
+- **|λᵢ| pequeño** → modo lento: domina la respuesta a tiempos largos, determina
+  cuánto tarda el reactor en llegar al estado estacionario.
+
+Los **eigenvectores** señalan las **direcciones en el plano (X,S)** a lo largo de
+las cuales esos modos evolucionan. En la gráfica de plano de fase (derecha)
+se muestran como líneas de trazos.
+""")
+
+        # ── 8. Integración numérica RK4 ───────────────────
+        st.markdown("### 8. Integración numérica: Runge-Kutta de 4to orden")
+        st.markdown("""
+Como las EDOs del quimiostato no tienen solución analítica exacta, usamos
+**Runge-Kutta de 4to orden (RK4)**, que estima la trayectoria evaluando
+cuatro pendientes en cada paso Δt:
+""")
+        st.latex(
+            r"\mathbf{k}_1 = \Delta t\,\mathbf{f}(t_n,\,\mathbf{y}_n)"
+        )
+        st.latex(
+            r"\mathbf{k}_2 = \Delta t\,\mathbf{f}\!\left(t_n+\tfrac{\Delta t}{2},\;\mathbf{y}_n+\tfrac{\mathbf{k}_1}{2}\right)"
+        )
+        st.latex(
+            r"\mathbf{k}_3 = \Delta t\,\mathbf{f}\!\left(t_n+\tfrac{\Delta t}{2},\;\mathbf{y}_n+\tfrac{\mathbf{k}_2}{2}\right)"
+        )
+        st.latex(
+            r"\mathbf{k}_4 = \Delta t\,\mathbf{f}(t_n+\Delta t,\;\mathbf{y}_n+\mathbf{k}_3)"
+        )
+        st.latex(
+            r"\mathbf{y}_{n+1} = \mathbf{y}_n + \frac{1}{6}(\mathbf{k}_1 + 2\mathbf{k}_2 + 2\mathbf{k}_3 + \mathbf{k}_4)"
+        )
+        st.markdown("""
+La fórmula pondera las cuatro pendientes: las del punto medio (k₂, k₃)
+cuentan el doble que las de los extremos del intervalo (k₁, k₄).
+Esto le da precisión de **orden 4**: el error global crece con Δt⁴.
+""")
+
+        if first_step is not None:
+            st.markdown("**Pendientes del primer paso con las condiciones iniciales actuales:**")
+            rk_df = pd.DataFrame({
+                "Pendiente": ["k₁", "k₂", "k₃", "k₄"],
+                "ΔX (g/L)": [first_step["k1X"], first_step["k2X"],
+                              first_step["k3X"], first_step["k4X"]],
+                "ΔS (g/L)": [first_step["k1S"], first_step["k2S"],
+                              first_step["k3S"], first_step["k4S"]],
+            })
+            st.dataframe(rk_df.style.format({"ΔX (g/L)": "{:.6f}", "ΔS (g/L)": "{:.6f}"}),
+                         use_container_width=True)
+            st.markdown(
+                f"**Resultado:** X(Δt) = `{first_step['X1']:.6f}` g/L, "
+                f"S(Δt) = `{first_step['S1']:.6f}` g/L"
+            )
+
 # ─────────────────────────────────────────────────────────
 # TAB 2 · Análisis de Estabilidad
 # ─────────────────────────────────────────────────────────
@@ -939,64 +1185,6 @@ with tab_stability:
         })
         st.dataframe(evw_df.style.format({"v1": "{:.6f}", "v2": "{:.6f}"}), use_container_width=True)
 
-    # ── Guía docente ─────────────────────────────────────
-    st.divider()
-    with st.expander("📖 Guía de modelado (paso a paso)"):
-        st.markdown("### 1. Cinética de Monod")
-        st.latex(r"\mu(S) = \frac{\mu_{max}S}{K_s + S}")
-
-        st.markdown("### 2. Balance de biomasa")
-        st.latex(r"\frac{dX}{dt}=X(\mu-D)")
-
-        st.markdown("### 3. Balance de sustrato")
-        st.latex(r"\frac{dS}{dt}=D(S_r-S)-\frac{\mu X}{Y_{x/s}}")
-
-        st.markdown("### 4. Equilibrio positivo")
-        st.latex(r"\mu(S^*)=D")
-        st.latex(r"S^*=\frac{D K_s}{\mu_{max}-D}")
-
-        if positive_eq is not None and positive_eq["physical"]:
-            S_star = positive_eq["S"]
-            X_star = positive_eq["X"]
-
-            st.latex(
-                rf"S^*=\frac{{({params['D']:.4f})({params['Ks']:.4f})}}{{{params['mu_max']:.4f}-{params['D']:.4f}}}"
-                rf"={S_star:.6f}"
-            )
-            st.latex(
-                rf"X^*={params['Yxs']:.4f}\,({params['Sr']:.4f}-{S_star:.6f})={X_star:.6f}"
-            )
-
-            st.markdown("### 5. Jacobiana analítica")
-            st.latex(
-                r"J=\begin{pmatrix}"
-                r"\mu-D & X\mu'(S)\\"
-                r"-\mu/Y_{x/s} & -D-\frac{X\mu'(S)}{Y_{x/s}}"
-                r"\end{pmatrix}"
-            )
-
-            J = positive_analysis["J"]
-            st.latex(
-                r"J^*=\begin{pmatrix}"
-                + f"{J[0,0]:.6f} & {J[0,1]:.6f}\\\\"
-                + f"{J[1,0]:.6f} & {J[1,1]:.6f}"
-                + r"\end{pmatrix}"
-            )
-
-            st.markdown("### 6. Primer paso RK4")
-            if first_step is not None:
-                rk_df = pd.DataFrame({
-                    "Pendiente": ["k1", "k2", "k3", "k4"],
-                    "X": [first_step["k1X"], first_step["k2X"], first_step["k3X"], first_step["k4X"]],
-                    "S": [first_step["k1S"], first_step["k2S"], first_step["k3S"], first_step["k4S"]],
-                })
-                st.dataframe(rk_df.style.format({"X": "{:.6f}", "S": "{:.6f}"}), use_container_width=True)
-                st.markdown(
-                    f"**Resultado del primer paso:** X₁ = `{first_step['X1']:.6f}`, "
-                    f"S₁ = `{first_step['S1']:.6f}`"
-                )
-        else:
-            st.warning("Con estos parámetros no existe equilibrio positivo físicamente factible.")
 
 # ─────────────────────────────────────────────────────────
 # TAB 3 · Exportación
