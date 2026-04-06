@@ -239,6 +239,71 @@ html, body, [data-testid="stAppViewContainer"] {
 .g-badge-unstable { background:#FCE8E6; color:#C5221F; border:1px solid #F5B8B5; }
 .g-badge-warning  { background:#FEF7E0; color:#B06000; border:1px solid #F8D775; }
 
+/* ── Teaching explainer / expander ──────────────────────── */
+.g-guide-intro {
+    background: linear-gradient(135deg, #E8F0FE 0%, #F5F9FF 100%);
+    border: 1px solid #C5D9FB;
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.1rem;
+    margin: 1rem 0 0.8rem 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.g-guide-kicker {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--g-blue);
+    margin-bottom: 0.4rem;
+}
+
+.g-guide-title {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.32rem 0;
+}
+
+.g-guide-copy {
+    font-size: 0.91rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+details[data-testid="stExpander"] {
+    border: 1px solid #C5D9FB !important;
+    border-radius: var(--radius-lg) !important;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FBFF 100%) !important;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+details[data-testid="stExpander"] summary {
+    padding: 0.95rem 1.1rem !important;
+    background: linear-gradient(135deg, #4285F4 0%, #2B6DE0 100%) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+}
+
+details[data-testid="stExpander"] summary:hover {
+    background: linear-gradient(135deg, #3C7BE5 0%, #255FC5 100%) !important;
+}
+
+details[data-testid="stExpander"] summary p {
+    color: #FFFFFF !important;
+    font-family: 'Google Sans', 'Roboto', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 0.98rem !important;
+}
+
+details[data-testid="stExpander"] > div[role="region"] {
+    padding-top: 0.35rem;
+}
+
 /* ── Tabs ────────────────────────────────────────────────── */
 .stTabs [data-baseweb="tab-list"] {
     gap: 0;
@@ -587,6 +652,14 @@ hr { border-color: var(--border); margin: 1.2rem 0; }
 
     .hc-footer-github {
         margin-left: auto;
+    }
+
+    .g-guide-title {
+        font-size: 1rem;
+    }
+
+    details[data-testid="stExpander"] summary {
+        padding: 0.85rem 0.95rem !important;
     }
 }
 </style>
@@ -1009,7 +1082,7 @@ st.markdown(
 tab_results, tab_stability, tab_export = st.tabs([
     "📈  Resultados Cinéticos",
     "🔬  Análisis de Estabilidad",
-    "📤  Exportación",
+    "📤  Datos y Descarga",
 ])
 
 # ─────────────────────────────────────────────────────────
@@ -1131,7 +1204,20 @@ with tab_results:
 
     # ── Guía docente ─────────────────────────────────────
     st.divider()
-    with st.expander("📖  Marco teórico y guía de modelado", expanded=False):
+    st.markdown(
+        """
+        <div class="g-guide-intro">
+            <span class="g-guide-kicker">Guía de interpretación</span>
+            <h3 class="g-guide-title">Entiende cómo se hacen los cálculos y por qué el modelo se comporta así</h3>
+            <p class="g-guide-copy">
+                Abre esta sección si quieres ver, paso a paso, la cinética de Monod, los balances,
+                la linealización con Jacobiana y la lógica detrás del análisis de estabilidad y de RK4.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    with st.expander("Abrir explicación del modelo, los cálculos y el análisis de estabilidad", expanded=False):
 
         # ── Intro ──────────────────────────────────────────
         st.markdown("""
@@ -1481,80 +1567,29 @@ with tab_stability:
 # TAB 3 · Exportación
 # ─────────────────────────────────────────────────────────
 with tab_export:
-    exp_left, exp_right = st.columns([1.5, 1])
+    st.markdown('<div class="g-card">', unsafe_allow_html=True)
+    st.markdown('<span class="g-card-label">Time series data</span>', unsafe_allow_html=True)
+    st.subheader("Tabla temporal RK4")
+    st.caption("Descarga únicamente la serie temporal de la simulación. Se retiró el resumen JSON para simplificar esta sección.")
 
-    # ── Tabla y descarga CSV ─────────────────────────────
-    with exp_left:
-        st.markdown('<div class="g-card">', unsafe_allow_html=True)
-        st.markdown('<span class="g-card-label">Time series data</span>', unsafe_allow_html=True)
-        st.subheader("Tabla temporal RK4")
+    st.dataframe(
+        sim_df.style.format({
+            "t": "{:.4f}", "X": "{:.6f}",
+            "S": "{:.6f}", "mu": "{:.6f}",
+        }),
+        use_container_width=True,
+        height=360,
+    )
 
-        st.dataframe(
-            sim_df.style.format({
-                "t": "{:.4f}", "X": "{:.6f}",
-                "S": "{:.6f}", "mu": "{:.6f}",
-            }),
-            use_container_width=True,
-            height=340,
-        )
-
-        csv_bytes = sim_df.to_csv(index=False).encode("utf-8")
-        st.download_button(
-            label="⬇  Descargar CSV — Series de tiempo",
-            data=csv_bytes,
-            file_name="bioreact_simulation.csv",
-            mime="text/csv",
-            use_container_width=True,
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # ── Resumen de estabilidad + descarga JSON ───────────
-    with exp_right:
-        st.markdown('<div class="g-card">', unsafe_allow_html=True)
-        st.markdown('<span class="g-card-label">Stability summary</span>', unsafe_allow_html=True)
-        st.subheader("Resumen de equilibrios")
-
-        summary = {
-            "params": params,
-            "initial_conditions": {"X0": x0, "S0": s0, "dt": dt, "t_final": t_f},
-            "washout": {
-                "X_star": washout_eq["X"],
-                "S_star": washout_eq["S"],
-                "classification": washout_analysis["classification"],
-                "eigenvalues": [complex(e).__str__() for e in washout_analysis["evals"]],
-            },
-        }
-
-        if positive_eq is not None and positive_eq["physical"]:
-            summary["positive_eq"] = {
-                "X_star": positive_eq["X"],
-                "S_star": positive_eq["S"],
-                "physical": positive_eq["physical"],
-                "classification": positive_analysis["classification"],
-                "eigenvalues": [complex(e).__str__() for e in positive_analysis["evals"]],
-            }
-        else:
-            summary["positive_eq"] = None
-
-        summary["final_state"] = {
-            "X_final": float(final_X),
-            "S_final": float(final_S),
-            "mu_final": float(final_mu),
-            "steps": len(sim_df) - 1,
-            "washout_reached": show_washout_on_phase,
-        }
-
-        st.json(summary)
-
-        json_bytes = json.dumps(summary, indent=2, ensure_ascii=False).encode("utf-8")
-        st.download_button(
-            label="⬇  Descargar JSON — Análisis de estabilidad",
-            data=json_bytes,
-            file_name="bioreact_stability.json",
-            mime="application/json",
-            use_container_width=True,
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
+    csv_bytes = sim_df.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        label="⬇  Descargar CSV — Series de tiempo",
+        data=csv_bytes,
+        file_name="bioreact_simulation.csv",
+        mime="text/csv",
+        use_container_width=True,
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================================================
 # FOOTER — HOSTCELL LAB SUITE (constante entre herramientas)
