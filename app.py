@@ -2,139 +2,360 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+import io
+import json
 
 # =========================================================
 # CONFIGURACIÓN DE PÁGINA
 # =========================================================
-st.set_page_config(page_title="BioReact Engine", layout="wide")
+st.set_page_config(
+    page_title="BioReact Engine · Google Lab",
+    page_icon="🧬",
+    layout="wide",
+)
 
 # =========================================================
-# ESTILOS
+# MATERIAL DESIGN CSS (Google palette)
 # =========================================================
 st.markdown("""
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
 <style>
+/* ── Root tokens ─────────────────────────────────────────── */
 :root {
-    --bg-soft: #0f172a;
-    --card: #111827;
-    --card-2: #172033;
-    --border: rgba(166, 206, 99, 0.22);
-    --accent: #a6ce63;
-    --accent-2: #d29bff;
-    --text: #f5f7fb;
-    --muted: #aab5c8;
+    --g-blue:   #4285F4;
+    --g-red:    #EA4335;
+    --g-yellow: #FBBC05;
+    --g-green:  #34A853;
+    --bg:       #F8F9FA;
+    --surface:  #FFFFFF;
+    --border:   #E0E0E0;
+    --border-focus: #4285F4;
+    --text-primary:   #202124;
+    --text-secondary: #5F6368;
+    --shadow-sm: 0 1px 3px rgba(60,64,67,0.12), 0 1px 2px rgba(60,64,67,0.08);
+    --shadow-md: 0 4px 12px rgba(60,64,67,0.15), 0 2px 4px rgba(60,64,67,0.08);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
 }
+
+/* ── Global typography & background ─────────────────────── */
+html, body, [data-testid="stAppViewContainer"] {
+    font-family: 'Roboto', 'Google Sans', Arial, sans-serif;
+    background: var(--bg) !important;
+    color: var(--text-primary);
+}
+
+[data-testid="stHeader"] { background: transparent !important; }
 
 .block-container {
     padding-top: 1.4rem;
-    padding-bottom: 2.5rem;
+    padding-bottom: 3rem;
 }
 
-.host-cell-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 10px 0 16px 0;
-    margin-bottom: 18px;
+/* ── Sidebar ─────────────────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background: var(--surface) !important;
+    border-right: 1px solid var(--border);
+}
+
+[data-testid="stSidebar"] .block-container { padding-top: 1.4rem; }
+
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-top: 1.4rem;
+    margin-bottom: 0.2rem;
+    padding-bottom: 4px;
     border-bottom: 1px solid var(--border);
 }
 
-.app-icon-container {
-    width: 54px;
-    height: 54px;
-    background: linear-gradient(180deg, #1a2544 0%, #121a31 100%);
-    border: 1px solid #2a3557;
-    border-radius: 14px;
+/* ── Google header ───────────────────────────────────────── */
+.g-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+    gap: 16px;
+    padding: 10px 0 18px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.g-logo {
+    width: 48px; height: 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
     flex-shrink: 0;
 }
 
-.app-icon-text {
-    color: var(--accent);
-    font-weight: 900;
-    font-size: 20px;
-    letter-spacing: 0.02em;
+.g-dot {
+    border-radius: 50%;
+    width: 100%; height: 100%;
 }
 
-.brand-content {
-    line-height: 1.15;
-}
-
-.app-title-main {
-    font-size: 1.7rem;
-    font-weight: 800;
-    margin: 0;
-    color: var(--text);
-}
-
-.app-subtitle-main {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--muted);
-    margin: 0.15rem 0 0 0;
-}
-
-.author-highlight {
-    color: var(--accent);
+.g-brand h1 {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-size: 1.65rem;
     font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
 }
 
-.section-card {
-    background: linear-gradient(180deg, rgba(17,24,39,0.98) 0%, rgba(23,32,51,0.98) 100%);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px;
-    padding: 1rem 1rem 0.6rem 1rem;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.14);
-    margin-bottom: 1rem;
+.g-brand p {
+    font-size: 0.83rem;
+    color: var(--text-secondary);
+    margin: 4px 0 0 0;
+    font-weight: 400;
 }
 
-.metric-card {
-    background: linear-gradient(180deg, rgba(17,24,39,0.98) 0%, rgba(23,32,51,0.98) 100%);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px;
-    padding: 0.8rem 1rem;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-}
-
-.kicker {
-    display: inline-block;
-    padding: 0.22rem 0.58rem;
-    border: 1px solid rgba(166,206,99,0.28);
-    color: var(--muted);
+.g-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
     border-radius: 999px;
-    font-size: 0.76rem;
-    margin-bottom: 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: #E8F0FE;
+    color: var(--g-blue);
+    border: 1px solid #C5D9FB;
+    margin-left: 8px;
+    vertical-align: middle;
 }
 
-.small-muted {
-    color: var(--muted);
-    font-size: 0.92rem;
+.g-chip-green {
+    background: #E6F4EA;
+    color: #137333;
+    border-color: #A8D5B5;
 }
 
+/* ── Cards ───────────────────────────────────────────────── */
+.g-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.1rem 0.6rem 1.1rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1rem;
+    transition: box-shadow 0.18s ease;
+}
+
+.g-card:hover { box-shadow: var(--shadow-md); }
+
+.g-card-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--g-blue);
+    margin-bottom: 0.45rem;
+    display: block;
+}
+
+/* ── Metric strip ────────────────────────────────────────── */
+.g-metric {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--g-blue);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1rem 0.75rem 1rem;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+}
+
+.g-metric-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.g-metric-value {
+    font-family: 'Google Sans', 'Roboto Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ── Status badges ───────────────────────────────────────── */
+.g-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.g-badge-stable   { background:#E6F4EA; color:#137333; border:1px solid #A8D5B5; }
+.g-badge-unstable { background:#FCE8E6; color:#C5221F; border:1px solid #F5B8B5; }
+.g-badge-warning  { background:#FEF7E0; color:#B06000; border:1px solid #F8D775; }
+
+/* ── Tabs ────────────────────────────────────────────────── */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 0.4rem;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    padding: 6px 8px 0 8px;
 }
 
 .stTabs [data-baseweb="tab"] {
-    border-radius: 10px 10px 0 0;
-    padding: 0.55rem 0.9rem;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    padding: 0.5rem 1.1rem;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 0.87rem;
+    color: var(--text-secondary);
+    background: transparent;
+    border-bottom: 2px solid transparent;
+}
+
+.stTabs [aria-selected="true"] {
+    color: var(--g-blue) !important;
+    border-bottom: 2px solid var(--g-blue) !important;
+    background: transparent !important;
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.stButton > button {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 0.88rem;
+    padding: 0.45rem 1.3rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--g-blue);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s ease;
+}
+
+.stButton > button:hover {
+    background: #E8F0FE;
+    border-color: var(--g-blue);
+    box-shadow: var(--shadow-md);
+}
+
+.stDownloadButton > button {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    background: var(--g-blue);
+    color: white !important;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s ease;
+}
+
+.stDownloadButton > button:hover {
+    background: #3367D6 !important;
+    box-shadow: var(--shadow-md);
+}
+
+/* ── Inputs / number inputs ──────────────────────────────── */
+[data-testid="stNumberInput"] input,
+[data-testid="stTextInput"] input {
+    border-radius: var(--radius-sm) !important;
+    border: 1px solid var(--border) !important;
+    font-family: 'Roboto', sans-serif;
+}
+
+[data-testid="stNumberInput"] input:focus,
+[data-testid="stTextInput"] input:focus {
+    border-color: var(--g-blue) !important;
+    box-shadow: 0 0 0 2px rgba(66,133,244,0.15) !important;
+}
+
+/* ── Slider accent ───────────────────────────────────────── */
+[data-testid="stSidebar"] [data-testid="stSlider"] [role="slider"] {
+    background: var(--g-blue) !important;
+}
+
+/* ── DataFrame ───────────────────────────────────────────── */
+[data-testid="stDataFrame"] {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid var(--border) !important;
+    overflow: hidden;
+}
+
+/* ── Alerts ──────────────────────────────────────────────── */
+.stAlert { border-radius: var(--radius-md); }
+
+/* ── Divider ─────────────────────────────────────────────── */
+hr { border-color: var(--border); margin: 1.2rem 0; }
+
+/* ── Spinner ─────────────────────────────────────────────── */
+[data-testid="stSpinner"] > div > div {
+    border-top-color: var(--g-blue) !important;
 }
 </style>
 
-<div class="host-cell-header">
-    <div class="app-icon-container">
-        <span class="app-icon-text">BR</span>
+<div class="g-header">
+    <div class="g-logo">
+        <div class="g-dot" style="background:#4285F4"></div>
+        <div class="g-dot" style="background:#EA4335"></div>
+        <div class="g-dot" style="background:#FBBC05"></div>
+        <div class="g-dot" style="background:#34A853"></div>
     </div>
-    <div class="brand-content">
-        <h1 class="app-title-main">BioReact</h1>
-        <p class="app-subtitle-main">
-            Host Cell Lab Suite • Tool by <span class="author-highlight">Emiliano Balderas Ramírez</span>, Bioengineer PhD student
-        </p>
+    <div class="g-brand">
+        <h1>BioReact Engine <span class="g-chip">Live App</span></h1>
+        <p>Host Cell Lab Suite &nbsp;·&nbsp; Emiliano Balderas Ramírez, Bioengineer PhD student</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# =========================================================
+# PLOTLY GOOGLE THEME
+# =========================================================
+GOOGLE_LAYOUT = dict(
+    font=dict(family="Roboto, Google Sans, Arial, sans-serif", size=12, color="#202124"),
+    paper_bgcolor="white",
+    plot_bgcolor="white",
+    xaxis=dict(
+        showgrid=True, gridcolor="#F1F3F4", gridwidth=1,
+        linecolor="#E0E0E0", linewidth=1,
+        tickfont=dict(size=11, color="#5F6368"),
+        titlefont=dict(size=12, color="#5F6368", family="Roboto, sans-serif"),
+    ),
+    yaxis=dict(
+        showgrid=True, gridcolor="#F1F3F4", gridwidth=1,
+        linecolor="#E0E0E0", linewidth=1,
+        tickfont=dict(size=11, color="#5F6368"),
+        titlefont=dict(size=12, color="#5F6368", family="Roboto, sans-serif"),
+    ),
+    legend=dict(
+        bgcolor="rgba(255,255,255,0.92)",
+        bordercolor="#E0E0E0",
+        borderwidth=1,
+        font=dict(size=11, color="#202124"),
+        orientation="h",
+        yanchor="bottom", y=1.02,
+        xanchor="left", x=0,
+    ),
+    margin=dict(l=45, r=20, t=45, b=45),
+    hoverlabel=dict(
+        bgcolor="white",
+        bordercolor="#E0E0E0",
+        font=dict(family="Roboto, sans-serif", size=12),
+    ),
+)
 
 # =========================================================
 # UTILIDADES DE UI
@@ -253,12 +474,8 @@ def runge_kutta4(X0, S0, p, dt, t_final):
 
         if first_step_debug is None:
             first_step_debug = {
-                "X0": X,
-                "S0": S,
-                "dt": h,
-                **debug,
-                "X1": X_new,
-                "S1": S_new,
+                "X0": X, "S0": S, "dt": h, **debug,
+                "X1": X_new, "S1": S_new,
             }
 
         X, S = X_new, S_new
@@ -349,7 +566,7 @@ def analyze_equilibrium(eq, p):
     }
 
 # =========================================================
-# PLANO DE FASE
+# PLANO DE FASE — helpers
 # =========================================================
 def trajectory_tends_to_washout(sim_df, washout_eq):
     final_X = float(sim_df["X"].iloc[-1])
@@ -365,8 +582,7 @@ def trajectory_tends_to_washout(sim_df, washout_eq):
 
 def add_eigenvector_lines(fig, eq, analysis):
     Xs, Ss = eq["X"], eq["S"]
-
-    colors = ["#1565c0", "#8e24aa"]
+    colors = ["#4285F4", "#34A853"]
     labels = ["v1", "v2"]
 
     x_scale = max(1.5, 0.16 * max(Xs, 1.0))
@@ -382,42 +598,46 @@ def add_eigenvector_lines(fig, eq, analysis):
         y2 = Ss + s_scale * vs
 
         fig.add_trace(go.Scatter(
-            x=[x1, x2],
-            y=[y1, y2],
+            x=[x1, x2], y=[y1, y2],
             mode="lines",
             name=f"Eigenvector {i+1}",
-            line=dict(color=colors[i], width=2.4, dash="dash"),
-            showlegend=True
+            line=dict(color=colors[i], width=2, dash="dash"),
+            showlegend=True,
         ))
-
         fig.add_trace(go.Scatter(
-            x=[x2],
-            y=[y2],
+            x=[x2], y=[y2],
             mode="markers+text",
             text=[labels[i]],
             textposition="top right",
-            marker=dict(size=8, color=colors[i], symbol="circle"),
+            marker=dict(size=7, color=colors[i]),
             name=f"Etiqueta {labels[i]}",
-            showlegend=False
+            showlegend=False,
         ))
 
 # =========================================================
-# SIDEBAR
+# SIDEBAR — parámetros
 # =========================================================
-st.sidebar.header("⚙️ Parámetros fisiológicos")
+st.sidebar.markdown(
+    "<div style='text-align:center; padding:4px 0 12px 0;'>"
+    "<span style='font-family:Google Sans,Roboto,sans-serif; font-size:1.05rem;"
+    " font-weight:700; color:#202124;'>⚙️ Parámetros</span></div>",
+    unsafe_allow_html=True,
+)
+
+st.sidebar.header("Fisiológicos")
 mu_max = slider_with_exact_input("μmax (h⁻¹)", "mu_max", 0.001, 2.000, 1.000, 0.001)
-Ks = slider_with_exact_input("Ks (g/L)", "Ks", 0.001, 10.000, 1.000, 0.001)
-Yxs = slider_with_exact_input("Rendimiento Yx/s", "Yxs", 0.001, 1.000, 0.500, 0.001)
+Ks     = slider_with_exact_input("Ks (g/L)",   "Ks",     0.001, 10.000, 1.000, 0.001)
+Yxs    = slider_with_exact_input("Rendimiento Yx/s", "Yxs", 0.001, 1.000, 0.500, 0.001)
 
-st.sidebar.header("🚀 Operación del reactor")
+st.sidebar.header("Operación del reactor")
 Sr = slider_with_exact_input("Sr alimentación (g/L)", "Sr", 1.000, 200.000, 100.000, 0.001)
-D = slider_with_exact_input("Dilución D (h⁻¹)", "D", 0.001, 1.500, 0.500, 0.001)
+D  = slider_with_exact_input("Dilución D (h⁻¹)",      "D",  0.001,   1.500,   0.500, 0.001)
 
-st.sidebar.header("📍 Simulación")
-x0 = st.sidebar.number_input("X inicial (g/L)", min_value=0.0, value=0.200, step=0.001, format="%.3f")
-s0 = st.sidebar.number_input("S inicial (g/L)", min_value=0.0, value=15.000, step=0.001, format="%.3f")
-dt = st.sidebar.number_input("Paso RK4 Δt (h)", min_value=0.001, value=0.010, step=0.001, format="%.3f")
-t_f = st.sidebar.number_input("Tiempo final (h)", min_value=0.1, value=80.0, step=0.1, format="%.3f")
+st.sidebar.header("Simulación RK4")
+x0  = st.sidebar.number_input("X inicial (g/L)",   min_value=0.0,   value=0.200,  step=0.001, format="%.3f")
+s0  = st.sidebar.number_input("S inicial (g/L)",   min_value=0.0,   value=15.000, step=0.001, format="%.3f")
+dt  = st.sidebar.number_input("Paso RK4 Δt (h)",   min_value=0.001, value=0.010,  step=0.001, format="%.3f")
+t_f = st.sidebar.number_input("Tiempo final (h)",  min_value=0.1,   value=80.0,   step=0.1,   format="%.3f")
 
 params = {
     "mu_max": mu_max,
@@ -428,308 +648,430 @@ params = {
 }
 
 # =========================================================
-# CÁLCULOS
+# CÁLCULOS con spinner
 # =========================================================
-sim_df, first_step = runge_kutta4(x0, s0, params, dt, t_f)
+with st.spinner("Ejecutando simulación RK4..."):
+    sim_df, first_step = runge_kutta4(x0, s0, params, dt, t_f)
 
-washout_eq, positive_eq = equilibria_monod(params)
-washout_analysis = analyze_equilibrium(washout_eq, params)
-positive_analysis = analyze_equilibrium(positive_eq, params) if positive_eq is not None and positive_eq["physical"] else None
+    washout_eq, positive_eq       = equilibria_monod(params)
+    washout_analysis               = analyze_equilibrium(washout_eq, params)
+    positive_analysis              = (
+        analyze_equilibrium(positive_eq, params)
+        if positive_eq is not None and positive_eq["physical"]
+        else None
+    )
+    show_washout_on_phase = trajectory_tends_to_washout(sim_df, washout_eq)
 
-show_washout_on_phase = trajectory_tends_to_washout(sim_df, washout_eq)
-
-final_X = sim_df["X"].iloc[-1]
-final_S = sim_df["S"].iloc[-1]
+final_X  = sim_df["X"].iloc[-1]
+final_S  = sim_df["S"].iloc[-1]
 final_mu = sim_df["mu"].iloc[-1]
 
-# =========================================================
-# RESUMEN RÁPIDO
-# =========================================================
-r1, r2, r3, r4 = st.columns(4)
-with r1:
-    st.metric("X final (g/L)", f"{final_X:.4f}")
-with r2:
-    st.metric("S final (g/L)", f"{final_S:.4f}")
-with r3:
-    st.metric("μ final (h⁻¹)", f"{final_mu:.4f}")
-with r4:
-    st.metric("Pasos RK4", f"{len(sim_df) - 1}")
-
-# =========================================================
-# GRÁFICAS PRINCIPALES
-# =========================================================
-c1, c2 = st.columns(2)
-
-with c1:
-    st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown('<span class="kicker">Dynamics</span>', unsafe_allow_html=True)
-    st.subheader("Dinámica temporal")
-
-    fig_t = go.Figure()
-    fig_t.add_trace(go.Scatter(
-        x=sim_df["t"],
-        y=sim_df["X"],
-        name="X (Biomasa)",
-        line=dict(color="#a6ce63", width=3)
-    ))
-    fig_t.add_trace(go.Scatter(
-        x=sim_df["t"],
-        y=sim_df["S"],
-        name="S (Sustrato)",
-        line=dict(color="#2a3557", width=3)
-    ))
-
-    fig_t.update_layout(
-        xaxis_title="Tiempo (h)",
-        yaxis_title="Concentración (g/L)",
-        template="plotly_white",
-        height=460,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
-        margin=dict(l=30, r=20, t=30, b=30),
-    )
-    st.plotly_chart(fig_t, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with c2:
-    st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown('<span class="kicker">Phase plane</span>', unsafe_allow_html=True)
-    st.subheader("Plano de fase: X vs S")
-
-    fig_p = go.Figure()
-
-    # Trayectoria RK4
-    fig_p.add_trace(go.Scatter(
-        x=sim_df["X"],
-        y=sim_df["S"],
-        name="Trayectoria RK4",
-        mode="lines",
-        line=dict(color="#666666", dash="dot", width=3)
-    ))
-
-    # Inicio
-    fig_p.add_trace(go.Scatter(
-        x=[sim_df["X"].iloc[0]],
-        y=[sim_df["S"].iloc[0]],
-        mode="markers",
-        name="Inicio",
-        marker=dict(size=11, color="#000000", symbol="circle")
-    ))
-
-    # Final
-    fig_p.add_trace(go.Scatter(
-        x=[sim_df["X"].iloc[-1]],
-        y=[sim_df["S"].iloc[-1]],
-        mode="markers",
-        name="Final",
-        marker=dict(size=11, color="#a6ce63", symbol="circle")
-    ))
-
-    # Equilibrio positivo
+# ── Toast: notificar solo cuando cambian parámetros ──────
+_params_key = hash((mu_max, Ks, Yxs, Sr, D, x0, s0, dt, t_f))
+if st.session_state.get("_last_params_key") != _params_key:
+    st.session_state["_last_params_key"] = _params_key
     if positive_eq is not None and positive_eq["physical"]:
-        fig_p.add_trace(go.Scatter(
-            x=[positive_eq["X"]],
-            y=[positive_eq["S"]],
-            mode="markers",
-            name="Equilibrio positivo",
-            marker=dict(size=12, color="red", symbol="diamond")
-        ))
-        add_eigenvector_lines(fig_p, positive_eq, positive_analysis)
-
-    # Washout solo si la trayectoria tiende hacia ahí
-    if show_washout_on_phase:
-        fig_p.add_trace(go.Scatter(
-            x=[washout_eq["X"]],
-            y=[washout_eq["S"]],
-            mode="markers",
-            name="Washout",
-            marker=dict(size=12, color="#c62828", symbol="x")
-        ))
-
-    x_max_plot = max(
-        float(sim_df["X"].max()),
-        float(positive_eq["X"]) if positive_eq is not None and positive_eq["physical"] else 0.0,
-        1.0
-    ) * 1.15
-
-    y_max_plot = max(
-        float(sim_df["S"].max()),
-        float(positive_eq["S"]) if positive_eq is not None and positive_eq["physical"] else 0.0,
-        float(washout_eq["S"]) if show_washout_on_phase else 0.0,
-        1.0
-    ) * 1.15
-
-    fig_p.update_layout(
-        xaxis_title="Biomasa X (g/L)",
-        yaxis_title="Sustrato S (g/L)",
-        template="plotly_white",
-        height=460,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
-        margin=dict(l=30, r=20, t=30, b=30),
-        xaxis=dict(range=[0, x_max_plot]),
-        yaxis=dict(range=[0, y_max_plot]),
-    )
-    st.plotly_chart(fig_p, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# =========================================================
-# ANÁLISIS DE ESTABILIDAD
-# =========================================================
-st.divider()
-st.subheader("🔍 Análisis de estabilidad local")
-
-tab_pos, tab_wash = st.tabs(["Equilibrio positivo", "Washout"])
-
-with tab_pos:
-    if positive_eq is None or not positive_eq["physical"]:
-        st.warning("Con estos parámetros no existe un equilibrio positivo físicamente factible.")
+        st.toast(
+            f"Equilibrio estable · X*={positive_eq['X']:.3f} g/L, S*={positive_eq['S']:.3f} g/L",
+            icon="✅",
+        )
     else:
-        a1, a2, a3 = st.columns([1.0, 1.1, 1.6])
+        st.toast("Washout detectado con los parámetros actuales", icon="⚠️")
 
-        with a1:
-            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
-            st.metric("X*", f"{positive_eq['X']:.4f} g/L")
-            st.metric("S*", f"{positive_eq['S']:.4f} g/L")
+# =========================================================
+# MÉTRICAS — barra superior
+# =========================================================
+st.markdown(
+    f"""
+    <div style="display:flex; gap:12px; margin-bottom:1.3rem; flex-wrap:wrap;">
+        <div class="g-metric" style="flex:1; min-width:130px;">
+            <div class="g-metric-label">X final</div>
+            <div class="g-metric-value">{final_X:.4f}</div>
+            <div style="font-size:0.7rem;color:#5F6368;margin-top:2px;">g/L</div>
+        </div>
+        <div class="g-metric" style="flex:1; min-width:130px; border-top-color:#EA4335;">
+            <div class="g-metric-label">S final</div>
+            <div class="g-metric-value">{final_S:.4f}</div>
+            <div style="font-size:0.7rem;color:#5F6368;margin-top:2px;">g/L</div>
+        </div>
+        <div class="g-metric" style="flex:1; min-width:130px; border-top-color:#FBBC05;">
+            <div class="g-metric-label">μ final</div>
+            <div class="g-metric-value">{final_mu:.4f}</div>
+            <div style="font-size:0.7rem;color:#5F6368;margin-top:2px;">h⁻¹</div>
+        </div>
+        <div class="g-metric" style="flex:1; min-width:130px; border-top-color:#34A853;">
+            <div class="g-metric-label">Pasos RK4</div>
+            <div class="g-metric-value">{len(sim_df) - 1}</div>
+            <div style="font-size:0.7rem;color:#5F6368;margin-top:2px;">iteraciones</div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# =========================================================
+# TABS PRINCIPALES
+# =========================================================
+tab_results, tab_stability, tab_export = st.tabs([
+    "📈  Resultados Cinéticos",
+    "🔬  Análisis de Estabilidad",
+    "📤  Exportación",
+])
+
+# ─────────────────────────────────────────────────────────
+# TAB 1 · Resultados Cinéticos
+# ─────────────────────────────────────────────────────────
+with tab_results:
+    col_left, col_right = st.columns(2)
+
+    # ── Dinámica temporal ────────────────────────────────
+    with col_left:
+        st.markdown('<div class="g-card">', unsafe_allow_html=True)
+        st.markdown('<span class="g-card-label">Dynamics</span>', unsafe_allow_html=True)
+        st.subheader("Dinámica temporal")
+
+        fig_t = go.Figure()
+        fig_t.add_trace(go.Scatter(
+            x=sim_df["t"], y=sim_df["X"],
+            name="X — Biomasa",
+            line=dict(color="#4285F4", width=2.5),
+            hovertemplate="t=%{x:.2f} h<br>X=%{y:.4f} g/L<extra></extra>",
+        ))
+        fig_t.add_trace(go.Scatter(
+            x=sim_df["t"], y=sim_df["S"],
+            name="S — Sustrato",
+            line=dict(color="#EA4335", width=2.5),
+            hovertemplate="t=%{x:.2f} h<br>S=%{y:.4f} g/L<extra></extra>",
+        ))
+        fig_t.add_trace(go.Scatter(
+            x=sim_df["t"], y=sim_df["mu"],
+            name="μ — Tasa específica",
+            line=dict(color="#FBBC05", width=1.8, dash="dot"),
+            hovertemplate="t=%{x:.2f} h<br>μ=%{y:.4f} h⁻¹<extra></extra>",
+            yaxis="y2",
+        ))
+
+        fig_t.update_layout(
+            **GOOGLE_LAYOUT,
+            height=440,
+            xaxis_title="Tiempo (h)",
+            yaxis_title="Concentración (g/L)",
+            yaxis2=dict(
+                title="μ (h⁻¹)",
+                overlaying="y",
+                side="right",
+                showgrid=False,
+                tickfont=dict(size=10, color="#FBBC05"),
+                titlefont=dict(size=11, color="#FBBC05"),
+            ),
+        )
+        st.plotly_chart(fig_t, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # ── Plano de fase ────────────────────────────────────
+    with col_right:
+        st.markdown('<div class="g-card">', unsafe_allow_html=True)
+        st.markdown('<span class="g-card-label">Phase Plane</span>', unsafe_allow_html=True)
+        st.subheader("Plano de fase: X vs S")
+
+        fig_p = go.Figure()
+
+        fig_p.add_trace(go.Scatter(
+            x=sim_df["X"], y=sim_df["S"],
+            name="Trayectoria RK4",
+            mode="lines",
+            line=dict(color="#9AA0A6", dash="dot", width=2.5),
+            hovertemplate="X=%{x:.4f} g/L<br>S=%{y:.4f} g/L<extra></extra>",
+        ))
+        fig_p.add_trace(go.Scatter(
+            x=[sim_df["X"].iloc[0]], y=[sim_df["S"].iloc[0]],
+            mode="markers", name="Inicio",
+            marker=dict(size=11, color="#5F6368", symbol="circle",
+                        line=dict(color="white", width=2)),
+        ))
+        fig_p.add_trace(go.Scatter(
+            x=[sim_df["X"].iloc[-1]], y=[sim_df["S"].iloc[-1]],
+            mode="markers", name="Final",
+            marker=dict(size=11, color="#4285F4", symbol="circle",
+                        line=dict(color="white", width=2)),
+        ))
+
+        if positive_eq is not None and positive_eq["physical"]:
+            fig_p.add_trace(go.Scatter(
+                x=[positive_eq["X"]], y=[positive_eq["S"]],
+                mode="markers", name="Equilibrio positivo",
+                marker=dict(size=13, color="#34A853", symbol="diamond",
+                            line=dict(color="white", width=2)),
+            ))
+            add_eigenvector_lines(fig_p, positive_eq, positive_analysis)
+
+        if show_washout_on_phase:
+            fig_p.add_trace(go.Scatter(
+                x=[washout_eq["X"]], y=[washout_eq["S"]],
+                mode="markers", name="Washout",
+                marker=dict(size=13, color="#EA4335", symbol="x",
+                            line=dict(color="#EA4335", width=2.5)),
+            ))
+
+        x_max_plot = max(
+            float(sim_df["X"].max()),
+            float(positive_eq["X"]) if positive_eq and positive_eq["physical"] else 0.0,
+            1.0,
+        ) * 1.15
+
+        y_max_plot = max(
+            float(sim_df["S"].max()),
+            float(positive_eq["S"]) if positive_eq and positive_eq["physical"] else 0.0,
+            float(washout_eq["S"]) if show_washout_on_phase else 0.0,
+            1.0,
+        ) * 1.15
+
+        fig_p.update_layout(
+            **GOOGLE_LAYOUT,
+            height=440,
+            xaxis_title="Biomasa X (g/L)",
+            yaxis_title="Sustrato S (g/L)",
+            xaxis=dict(**GOOGLE_LAYOUT["xaxis"], range=[0, x_max_plot]),
+            yaxis=dict(**GOOGLE_LAYOUT["yaxis"], range=[0, y_max_plot]),
+        )
+        st.plotly_chart(fig_p, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────────────────
+# TAB 2 · Análisis de Estabilidad
+# ─────────────────────────────────────────────────────────
+with tab_stability:
+    sub_pos, sub_wash = st.tabs(["Equilibrio Positivo", "Washout"])
+
+    # ── Equilibrio positivo ──────────────────────────────
+    with sub_pos:
+        if positive_eq is None or not positive_eq["physical"]:
+            st.warning("Con estos parámetros no existe un equilibrio positivo físicamente factible.")
+        else:
+            cls = positive_analysis["classification"]
+            badge_cls = "g-badge-stable" if "Estable" in cls else "g-badge-unstable"
+            st.markdown(
+                f'<div style="margin-bottom:1rem;">'
+                f'<span class="g-badge {badge_cls}">{cls}</span>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+            a1, a2, a3 = st.columns([1.0, 1.1, 1.6])
+
+            with a1:
+                st.markdown('<div class="g-card">', unsafe_allow_html=True)
+                st.metric("X*", f"{positive_eq['X']:.4f} g/L")
+                st.metric("S*", f"{positive_eq['S']:.4f} g/L")
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            with a2:
+                st.markdown('<div class="g-card">', unsafe_allow_html=True)
+                st.write("**Eigenvalores**")
+                st.code(
+                    f"λ1 = {positive_analysis['evals'][0]:.6f}\n"
+                    f"λ2 = {positive_analysis['evals'][1]:.6f}"
+                )
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            with a3:
+                st.markdown('<div class="g-card">', unsafe_allow_html=True)
+                st.write("**Matriz Jacobiana**")
+                J = positive_analysis["J"]
+                J_df = pd.DataFrame(J, index=["dX/dt", "dS/dt"], columns=["∂/∂X", "∂/∂S"])
+                st.dataframe(J_df.style.format("{:.6f}"), use_container_width=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            st.write("**Eigenvectores normalizados**")
+            ev1 = positive_analysis["evecs"][0]
+            ev2 = positive_analysis["evecs"][1]
+            ev_df = pd.DataFrame({
+                "Componente": ["X", "S"],
+                "v1": [np.real(ev1[0]), np.real(ev1[1])],
+                "v2": [np.real(ev2[0]), np.real(ev2[1])],
+            })
+            st.dataframe(ev_df.style.format({"v1": "{:.6f}", "v2": "{:.6f}"}), use_container_width=True)
+
+    # ── Washout ──────────────────────────────────────────
+    with sub_wash:
+        cls_w = washout_analysis["classification"]
+        badge_cls_w = "g-badge-stable" if "Estable" in cls_w else "g-badge-unstable"
+        st.markdown(
+            f'<div style="margin-bottom:1rem;">'
+            f'<span class="g-badge {badge_cls_w}">{cls_w}</span>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+
+        b1, b2, b3 = st.columns([1.0, 1.1, 1.6])
+
+        with b1:
+            st.markdown('<div class="g-card">', unsafe_allow_html=True)
+            st.metric("X*", f"{washout_eq['X']:.4f} g/L")
+            st.metric("S*", f"{washout_eq['S']:.4f} g/L")
             st.markdown('</div>', unsafe_allow_html=True)
 
-        with a2:
-            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        with b2:
+            st.markdown('<div class="g-card">', unsafe_allow_html=True)
             st.write("**Eigenvalores**")
             st.code(
-                f"λ1 = {positive_analysis['evals'][0]:.6f}\n"
-                f"λ2 = {positive_analysis['evals'][1]:.6f}"
+                f"λ1 = {washout_analysis['evals'][0]:.6f}\n"
+                f"λ2 = {washout_analysis['evals'][1]:.6f}"
             )
-            st.info(f"Clasificación: {positive_analysis['classification']}")
             st.markdown('</div>', unsafe_allow_html=True)
 
-        with a3:
-            st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        with b3:
+            st.markdown('<div class="g-card">', unsafe_allow_html=True)
             st.write("**Matriz Jacobiana**")
-            J = positive_analysis["J"]
-            J_df = pd.DataFrame(J, index=["dX/dt", "dS/dt"], columns=["∂/∂X", "∂/∂S"])
-            st.dataframe(J_df.style.format("{:.6f}"), use_container_width=True)
+            Jw = washout_analysis["J"]
+            Jw_df = pd.DataFrame(Jw, index=["dX/dt", "dS/dt"], columns=["∂/∂X", "∂/∂S"])
+            st.dataframe(Jw_df.style.format("{:.6f}"), use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
 
         st.write("**Eigenvectores normalizados**")
-        ev1 = positive_analysis["evecs"][0]
-        ev2 = positive_analysis["evecs"][1]
-        ev_df = pd.DataFrame({
+        ev1w = washout_analysis["evecs"][0]
+        ev2w = washout_analysis["evecs"][1]
+        evw_df = pd.DataFrame({
             "Componente": ["X", "S"],
-            "v1": [np.real(ev1[0]), np.real(ev1[1])],
-            "v2": [np.real(ev2[0]), np.real(ev2[1])],
+            "v1": [np.real(ev1w[0]), np.real(ev1w[1])],
+            "v2": [np.real(ev2w[0]), np.real(ev2w[1])],
         })
-        st.dataframe(ev_df.style.format({"v1": "{:.6f}", "v2": "{:.6f}"}), use_container_width=True)
+        st.dataframe(evw_df.style.format({"v1": "{:.6f}", "v2": "{:.6f}"}), use_container_width=True)
 
-with tab_wash:
-    b1, b2, b3 = st.columns([1.0, 1.1, 1.6])
+    # ── Guía docente ─────────────────────────────────────
+    st.divider()
+    with st.expander("📖 Guía de modelado (paso a paso)"):
+        st.markdown("### 1. Cinética de Monod")
+        st.latex(r"\mu(S) = \frac{\mu_{max}S}{K_s + S}")
 
-    with b1:
-        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
-        st.metric("X*", f"{washout_eq['X']:.4f} g/L")
-        st.metric("S*", f"{washout_eq['S']:.4f} g/L")
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("### 2. Balance de biomasa")
+        st.latex(r"\frac{dX}{dt}=X(\mu-D)")
 
-    with b2:
-        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
-        st.write("**Eigenvalores**")
-        st.code(
-            f"λ1 = {washout_analysis['evals'][0]:.6f}\n"
-            f"λ2 = {washout_analysis['evals'][1]:.6f}"
-        )
-        st.info(f"Clasificación: {washout_analysis['classification']}")
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("### 3. Balance de sustrato")
+        st.latex(r"\frac{dS}{dt}=D(S_r-S)-\frac{\mu X}{Y_{x/s}}")
 
-    with b3:
-        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
-        st.write("**Matriz Jacobiana**")
-        Jw = washout_analysis["J"]
-        Jw_df = pd.DataFrame(Jw, index=["dX/dt", "dS/dt"], columns=["∂/∂X", "∂/∂S"])
-        st.dataframe(Jw_df.style.format("{:.6f}"), use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("### 4. Equilibrio positivo")
+        st.latex(r"\mu(S^*)=D")
+        st.latex(r"S^*=\frac{D K_s}{\mu_{max}-D}")
 
-    st.write("**Eigenvectores normalizados**")
-    ev1w = washout_analysis["evecs"][0]
-    ev2w = washout_analysis["evecs"][1]
-    evw_df = pd.DataFrame({
-        "Componente": ["X", "S"],
-        "v1": [np.real(ev1w[0]), np.real(ev1w[1])],
-        "v2": [np.real(ev2w[0]), np.real(ev2w[1])],
-    })
-    st.dataframe(evw_df.style.format({"v1": "{:.6f}", "v2": "{:.6f}"}), use_container_width=True)
+        if positive_eq is not None and positive_eq["physical"]:
+            S_star = positive_eq["S"]
+            X_star = positive_eq["X"]
 
-# =========================================================
-# GUÍA DOCENTE
-# =========================================================
-st.divider()
-with st.expander("📖 Guía de modelado (paso a paso)"):
-    st.markdown("### 1. Cinética de Monod")
-    st.latex(r"\mu(S) = \frac{\mu_{max}S}{K_s + S}")
-
-    st.markdown("### 2. Balance de biomasa")
-    st.latex(r"\frac{dX}{dt}=X(\mu-D)")
-
-    st.markdown("### 3. Balance de sustrato")
-    st.latex(r"\frac{dS}{dt}=D(S_r-S)-\frac{\mu X}{Y_{x/s}}")
-
-    st.markdown("### 4. Equilibrio positivo")
-    st.latex(r"\mu(S^*)=D")
-    st.latex(r"S^*=\frac{D K_s}{\mu_{max}-D}")
-
-    if positive_eq is not None and positive_eq["physical"]:
-        S_star = positive_eq["S"]
-        X_star = positive_eq["X"]
-
-        st.latex(
-            rf"S^*=\frac{{({params['D']:.4f})({params['Ks']:.4f})}}{{{params['mu_max']:.4f}-{params['D']:.4f}}}"
-            rf"={S_star:.6f}"
-        )
-        st.latex(
-            rf"X^*={params['Yxs']:.4f}\,({params['Sr']:.4f}-{S_star:.6f})={X_star:.6f}"
-        )
-
-        st.markdown("### 5. Jacobiana analítica")
-        st.latex(
-            r"J=\begin{pmatrix}"
-            r"\mu-D & X\mu'(S)\\"
-            r"-\mu/Y_{x/s} & -D-\frac{X\mu'(S)}{Y_{x/s}}"
-            r"\end{pmatrix}"
-        )
-
-        J = positive_analysis["J"]
-        st.latex(
-            r"J^*=\begin{pmatrix}"
-            + f"{J[0,0]:.6f} & {J[0,1]:.6f}\\\\"
-            + f"{J[1,0]:.6f} & {J[1,1]:.6f}"
-            + r"\end{pmatrix}"
-        )
-
-        st.markdown("### 6. Primer paso RK4")
-        if first_step is not None:
-            rk_df = pd.DataFrame({
-                "Pendiente": ["k1", "k2", "k3", "k4"],
-                "X": [first_step["k1X"], first_step["k2X"], first_step["k3X"], first_step["k4X"]],
-                "S": [first_step["k1S"], first_step["k2S"], first_step["k3S"], first_step["k4S"]],
-            })
-            st.dataframe(rk_df.style.format({"X": "{:.6f}", "S": "{:.6f}"}), use_container_width=True)
-
-            st.markdown(
-                f"**Resultado del primer paso:** X₁ = `{first_step['X1']:.6f}`, "
-                f"S₁ = `{first_step['S1']:.6f}`"
+            st.latex(
+                rf"S^*=\frac{{({params['D']:.4f})({params['Ks']:.4f})}}{{{params['mu_max']:.4f}-{params['D']:.4f}}}"
+                rf"={S_star:.6f}"
             )
-    else:
-        st.warning("Con estos parámetros no existe equilibrio positivo físicamente factible.")
+            st.latex(
+                rf"X^*={params['Yxs']:.4f}\,({params['Sr']:.4f}-{S_star:.6f})={X_star:.6f}"
+            )
 
-# =========================================================
-# TABLA TEMPORAL
-# =========================================================
-st.divider()
-with st.expander("📈 Ver tabla temporal RK4"):
-    st.dataframe(
-        sim_df.style.format({
-            "t": "{:.4f}",
-            "X": "{:.6f}",
-            "S": "{:.6f}",
-            "mu": "{:.6f}",
-        }),
-        use_container_width=True,
-        height=320,
-    )
+            st.markdown("### 5. Jacobiana analítica")
+            st.latex(
+                r"J=\begin{pmatrix}"
+                r"\mu-D & X\mu'(S)\\"
+                r"-\mu/Y_{x/s} & -D-\frac{X\mu'(S)}{Y_{x/s}}"
+                r"\end{pmatrix}"
+            )
+
+            J = positive_analysis["J"]
+            st.latex(
+                r"J^*=\begin{pmatrix}"
+                + f"{J[0,0]:.6f} & {J[0,1]:.6f}\\\\"
+                + f"{J[1,0]:.6f} & {J[1,1]:.6f}"
+                + r"\end{pmatrix}"
+            )
+
+            st.markdown("### 6. Primer paso RK4")
+            if first_step is not None:
+                rk_df = pd.DataFrame({
+                    "Pendiente": ["k1", "k2", "k3", "k4"],
+                    "X": [first_step["k1X"], first_step["k2X"], first_step["k3X"], first_step["k4X"]],
+                    "S": [first_step["k1S"], first_step["k2S"], first_step["k3S"], first_step["k4S"]],
+                })
+                st.dataframe(rk_df.style.format({"X": "{:.6f}", "S": "{:.6f}"}), use_container_width=True)
+                st.markdown(
+                    f"**Resultado del primer paso:** X₁ = `{first_step['X1']:.6f}`, "
+                    f"S₁ = `{first_step['S1']:.6f}`"
+                )
+        else:
+            st.warning("Con estos parámetros no existe equilibrio positivo físicamente factible.")
+
+# ─────────────────────────────────────────────────────────
+# TAB 3 · Exportación
+# ─────────────────────────────────────────────────────────
+with tab_export:
+    exp_left, exp_right = st.columns([1.5, 1])
+
+    # ── Tabla y descarga CSV ─────────────────────────────
+    with exp_left:
+        st.markdown('<div class="g-card">', unsafe_allow_html=True)
+        st.markdown('<span class="g-card-label">Time series data</span>', unsafe_allow_html=True)
+        st.subheader("Tabla temporal RK4")
+
+        st.dataframe(
+            sim_df.style.format({
+                "t": "{:.4f}", "X": "{:.6f}",
+                "S": "{:.6f}", "mu": "{:.6f}",
+            }),
+            use_container_width=True,
+            height=340,
+        )
+
+        csv_bytes = sim_df.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            label="⬇  Descargar CSV — Series de tiempo",
+            data=csv_bytes,
+            file_name="bioreact_simulation.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # ── Resumen de estabilidad + descarga JSON ───────────
+    with exp_right:
+        st.markdown('<div class="g-card">', unsafe_allow_html=True)
+        st.markdown('<span class="g-card-label">Stability summary</span>', unsafe_allow_html=True)
+        st.subheader("Resumen de equilibrios")
+
+        summary = {
+            "params": params,
+            "initial_conditions": {"X0": x0, "S0": s0, "dt": dt, "t_final": t_f},
+            "washout": {
+                "X_star": washout_eq["X"],
+                "S_star": washout_eq["S"],
+                "classification": washout_analysis["classification"],
+                "eigenvalues": [complex(e).__str__() for e in washout_analysis["evals"]],
+            },
+        }
+
+        if positive_eq is not None and positive_eq["physical"]:
+            summary["positive_eq"] = {
+                "X_star": positive_eq["X"],
+                "S_star": positive_eq["S"],
+                "physical": positive_eq["physical"],
+                "classification": positive_analysis["classification"],
+                "eigenvalues": [complex(e).__str__() for e in positive_analysis["evals"]],
+            }
+        else:
+            summary["positive_eq"] = None
+
+        summary["final_state"] = {
+            "X_final": float(final_X),
+            "S_final": float(final_S),
+            "mu_final": float(final_mu),
+            "steps": len(sim_df) - 1,
+            "washout_reached": show_washout_on_phase,
+        }
+
+        st.json(summary)
+
+        json_bytes = json.dumps(summary, indent=2, ensure_ascii=False).encode("utf-8")
+        st.download_button(
+            label="⬇  Descargar JSON — Análisis de estabilidad",
+            data=json_bytes,
+            file_name="bioreact_stability.json",
+            mime="application/json",
+            use_container_width=True,
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
